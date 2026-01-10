@@ -162,7 +162,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+        <a href="main.html" class="navbar-brand">AptiCourser</a>
         <div class="navbar-user">
             <span><a href="main.html" class="link">Back to Menu</a></span>
         </div>
@@ -173,7 +173,7 @@
         
         <div id="mode" class="mode-indicator study-mode">Study Time</div>
         
-        <div id="status" class="timer-status">Timer running - switch pages freely</div>
+        <div id="status" class="timer-status">Timer running</div>
         
         <div class="timer-display">
             <div class="timer" id="timer">30:00</div>
@@ -220,12 +220,20 @@
         let targetTime = null;
         let totalSeconds = 1800;
         let isRunning = false;
+        let isPaused = false;
+        let pendingNotification = false;
         
-        // Initialize on load
         window.onload = function() {
+            // Request notification permission early
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
             loadState();
             updateDisplay();
             setInterval(checkTimer, 1000);
+            
+            // Listen for page visibility changes
+            document.addEventListener('visibilitychange', handleVisibilityChange);
         };
         
         function loadState() {
@@ -238,6 +246,8 @@
                 breakCount = state.breakCount || 0;
                 totalSeconds = state.totalSeconds || 1800;
                 targetTime = state.targetTime;
+                isPaused = state.isPaused === true;
+                pendingNotification = state.pendingNotification === true;
                 
                 // Restore dropdown values
                 document.getElementById('studyTime').value = state.studyDuration || 30;
@@ -251,8 +261,22 @@
                         updateUIForRunning();
                     } else {
                         // Timer completed while away
-                        handleTimerComplete(state);
+                        handleTimerComplete();
                     }
+                } else if (isPaused) {
+                    // Timer is paused
+                    isRunning = false;
+                    updateUIForPaused();
+                }
+                
+                // Check if we need to show notification (user returned after timer completed)
+                if (pendingNotification) {
+                    setTimeout(() => {
+                        playBeep();
+                        alert(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
+                        pendingNotification = false;
+                        saveState();
+                    }, 300);
                 }
                 
                 updateSessionDisplay();
@@ -268,7 +292,9 @@
                 studyCount: studyCount,
                 breakCount: breakCount,
                 studyDuration: parseInt(document.getElementById('studyTime').value),
-                breakDuration: parseInt(document.getElementById('breakTime').value)
+                breakDuration: parseInt(document.getElementById('breakTime').value),
+                isPaused: isPaused,
+                pendingNotification: pendingNotification
             };
             localStorage.setItem('pomodoroState', JSON.stringify(state));
         }
@@ -282,13 +308,21 @@
         }
         
         function startTimer() {
-            const duration = isStudy ? 
-                parseInt(document.getElementById('studyTime').value) : 
-                parseInt(document.getElementById('breakTime').value);
-            
-            totalSeconds = duration * 60;
-            targetTime = Date.now() + (totalSeconds * 1000);
-            isRunning = true;
+            if (isPaused) {
+                // Resume from pause - use the saved remaining time
+                isPaused = false;
+                isRunning = true;
+                targetTime = Date.now() + (totalSeconds * 1000);
+            } else {
+                // Fresh start
+                const duration = isStudy ? 
+                    parseInt(document.getElementById('studyTime').value) : 
+                    parseInt(document.getElementById('breakTime').value);
+                
+                totalSeconds = duration * 60;
+                targetTime = Date.now() + (totalSeconds * 1000);
+                isRunning = true;
+            }
             
             saveState();
             updateUIForRunning();
@@ -302,16 +336,19 @@
             }
             targetTime = null;
             isRunning = false;
+            isPaused = true;
             
             saveState();
-            updateUIForStopped();
+            updateUIForPaused();
             updateDisplay();
         }
         
         function stopTimer() {
             targetTime = null;
             isRunning = false;
+            isPaused = false;
             isStudy = true;
+            pendingNotification = false;
             
             // Reset to selected study time
             const studyDuration = parseInt(document.getElementById('studyTime').value);
@@ -326,6 +363,15 @@
         function updateUIForRunning() {
             document.getElementById('status').classList.add('active');
             document.getElementById('startBtn').textContent = 'Pause';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('studyTime').disabled = true;
+            document.getElementById('breakTime').disabled = true;
+        }
+        
+        function updateUIForPaused() {
+            document.getElementById('status').classList.remove('active');
+            document.getElementById('startBtn').textContent = 'Resume';
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = false;
             document.getElementById('studyTime').disabled = true;
@@ -375,7 +421,7 @@
         }
         
         function onSettingsChanged() {
-            if (!isRunning) {
+            if (!isRunning && !isPaused) {
                 const studyDuration = parseInt(document.getElementById('studyTime').value);
                 totalSeconds = studyDuration * 60;
                 saveState();
@@ -394,6 +440,7 @@
         function handleTimerComplete() {
             isRunning = false;
             targetTime = null;
+            isPaused = false;
             
             if (isStudy) {
                 studyCount++;
@@ -408,20 +455,64 @@
             updateUIForStopped();
             updateModeIndicator();
             updateSessionDisplay();
+            
+            // Save state before showing notification
+            pendingNotification = true;
             saveState();
             
-            // Play sound
-            playBeep();
-            
-            // Show notification
-            setTimeout(function() {
-                alert(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
-            }, 100);
+            // Try to show notification/beep
+            if (!document.hidden) {
+                // Page is visible - show notification now
+                playBeep();
+                showNotification(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
+                pendingNotification = false;
+                saveState();
+            } else {
+                // Page is hidden - notification will show when user returns
+                // Try browser notification anyway (might work depending on browser)
+                if (Notification.permission === 'granted') {
+                    new Notification('Pomodoro Timer', { 
+                        body: isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.',
+                        icon: 'favicon.ico' 
+                    });
+                }
+            }
+        }
+        
+        function handleVisibilityChange() {
+            // When page becomes visible, check if there's a pending notification
+            if (!document.hidden && pendingNotification) {
+                setTimeout(() => {
+                    playBeep();
+                    alert(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
+                    pendingNotification = false;
+                    saveState();
+                }, 300);
+            }
+        }
+        
+        function showNotification(message) {
+            // Try to use browser notifications first (works in background)
+            if (Notification.permission === 'granted') {
+                new Notification('Pomodoro Timer', { body: message, icon: 'favicon.ico' });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('Pomodoro Timer', { body: message, icon: 'favicon.ico' });
+                    }
+                });
+            }
         }
         
         function playBeep() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Resume audio context if suspended (required for background tabs)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 
