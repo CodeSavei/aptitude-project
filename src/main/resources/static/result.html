@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result - Aptitude Project</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+    </nav>
+
+    <div class="container">
+        <div class="result-card">
+            <h1>Your Result</h1>
+            
+            <div class="score-display">
+                <span id="score">0</span> / <span id="total">0</span>
+            </div>
+            
+            <p class="total-display" id="percentage"></p>
+            
+            <p class="result-message" id="message"></p>
+            
+            <button class="btn btn-primary btn-block" onclick="goHome()">Back to Main Menu</button>
+        </div>
+    </div>
+
+    <script>
+        function displayResult() {
+            const score = localStorage.getItem('testScore');
+            const total = localStorage.getItem('testTotal');
+            
+            if (!score || !total) {
+                alert('No result found!');
+                window.location.href = 'main.html';
+                return;
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+            
+            const percentage = Math.round((score / total) * 100);
+            document.getElementById('percentage').textContent = percentage + '%';
+            
+            let message = '';
+            if (percentage >= 80) {
+                message = 'Excellent! You did great!';
+            } else if (percentage >= 60) {
+                message = 'Good job! Keep practicing!';
+            } else if (percentage >= 40) {
+                message = 'Not bad, but there\'s room for improvement.';
+            } else {
+                message = 'Keep studying and try again!';
+            }
+            
+            document.getElementById('message').textContent = message;
+        }
+
+        function goHome() {
+            localStorage.removeItem('testScore');
+            localStorage.removeItem('testTotal');
+            localStorage.removeItem('testQuestions');
+            localStorage.removeItem('testMode');
+            window.location.href = 'main.html';
+        }
+
+        displayResult();
+    </script>
+</body>
+</html>

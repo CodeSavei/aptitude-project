@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Test - Aptitude Project</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+        <div class="navbar-user">
+            <span><a href="main.html" class="link">Back to Menu</a></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Create Your Own Test</h1>
+        
+        <div class="form-group">
+            <label>Select Topics:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicMath" value="Math" checked>
+                <label for="topicMath">Math</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicScience" value="Science">
+                <label for="topicScience">Science</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicGeography" value="Geography">
+                <label for="topicGeography">Geography</label>
+            </div>
+             <div class="checkbox-group">
+                <input type="checkbox" id="topicLogical" value="Logical">
+                <label for="topicLogical">Logical</label>
+            </div>
+             <div class="checkbox-group">
+                <input type="checkbox" id="topicVerbal" value="Verbal">
+                <label for="topicVerbal">Verbal</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Number of Questions:</label>
+            <select id="questionCount">
+                <option value="3">3 Questions</option>
+                <option value="5" selected>5 Questions</option>
+                <option value="10">10 Questions</option>
+            </select>
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="startTest()">Start Test</button>
+    </div>
+
+    <script>
+        async function startTest() {
+            const mathSelected = document.getElementById('topicMath').checked;
+            const scienceSelected = document.getElementById('topicScience').checked;
+            const geoSelected = document.getElementById('topicGeography').checked;
+            const logSelected = document.getElementById('topicLogical').checked;
+            const verbSelected = document.getElementById('topicVerbal').checked;
+            const count = document.getElementById('questionCount').value;
+            
+            let allQuestions = [];
+            
+            if (mathSelected) {
+                const response = await fetch('/api/questions/topic/Math/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (scienceSelected) {
+                const response = await fetch('/api/questions/topic/Science/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (geoSelected) {
+                const response = await fetch('/api/questions/topic/Geography/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (logSelected) {
+                const response = await fetch('/api/questions/topic/Logical/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (verbSelected) {
+                const response = await fetch('/api/questions/topic/Verbal/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            
+            if (allQuestions.length === 0) {
+                const response = await fetch('/api/questions/random?count=' + count);
+                allQuestions = await response.json();
+            }
+            
+            questions = allQuestions.slice(0, count);
+            
+            if (questions.length === 0) {
+                alert('No questions available. Please add questions to the database.');
+                return;
+            }
+            
+            localStorage.setItem('testQuestions', JSON.stringify(questions));
+            localStorage.setItem('testMode', 'custom');
+            window.location.href = 'test.html';
+        }
+    </script>
+</body>
+</html>

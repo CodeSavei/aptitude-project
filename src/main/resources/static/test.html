@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Aptitude Project</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+    </nav>
+
+    <div class="container">
+        <h1>Question <span id="currentNum">1</span></h1>
+        <p class="question-info">of <span id="totalNum">5</span></p>
+        
+        <div class="question-card">
+            <p class="question-text" id="questionText">Loading...</p>
+            
+            <label class="option-label">
+                <input type="radio" name="answer" value="A" id="optA">
+                <span id="textA"></span>
+            </label>
+            
+            <label class="option-label">
+                <input type="radio" name="answer" value="B" id="optB">
+                <span id="textB"></span>
+            </label>
+            
+            <label class="option-label">
+                <input type="radio" name="answer" value="C" id="optC">
+                <span id="textC"></span>
+            </label>
+            
+            <label class="option-label">
+                <input type="radio" name="answer" value="D" id="optD">
+                <span id="textD"></span>
+            </label>
+        </div>
+        
+        <button class="btn btn-primary btn-block" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+        <button class="btn btn-success btn-block hidden" id="submitBtn" onclick="submitTest()">Submit Test</button>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let userId = localStorage.getItem('userId');
+
+        function loadQuestions() {
+            const storedQuestions = localStorage.getItem('testQuestions');
+            
+            if (storedQuestions) {
+                questions = JSON.parse(storedQuestions);
+            } else {
+                alert('No questions found!');
+                window.location.href = 'main.html';
+                return;
+            }
+            
+            if (questions.length === 0) {
+                alert('No questions available!');
+                window.location.href = 'main.html';
+                return;
+            }
+            
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentIndex];
+            
+            document.getElementById('currentNum').textContent = currentIndex + 1;
+            document.getElementById('totalNum').textContent = questions.length;
+            
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('textA').textContent = question.optionA;
+            document.getElementById('textB').textContent = question.optionB;
+            document.getElementById('textC').textContent = question.optionC;
+            document.getElementById('textD').textContent = question.optionD;
+            
+            document.querySelectorAll('input[name="answer"]').forEach(input => {
+                input.checked = false;
+            });
+            
+            if (currentIndex === questions.length - 1) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (!selectedOption) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+            
+            const question = questions[currentIndex];
+            userAnswers.push({
+                questionId: question.id,
+                selectedOption: selectedOption.value
+            });
+            
+            currentIndex++;
+            displayQuestion();
+        }
+
+        async function submitTest() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (!selectedOption) {
+                alert('Please select an answer before submitting.');
+                return;
+            }
+            
+            const question = questions[currentIndex];
+            userAnswers.push({
+                questionId: question.id,
+                selectedOption: selectedOption.value
+            });
+            
+            try {
+                const testMode = localStorage.getItem('testMode');
+                let url = '/api/test/submit';
+                
+                if (testMode === 'course') {
+                    url = '/api/test/course/complete';
+                }
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: userId,
+                        answers: userAnswers
+                    })
+                });
+                
+                const result = await response.json();
+                
+                localStorage.setItem('testScore', result.score);
+                localStorage.setItem('testTotal', result.total);
+                window.location.href = 'result.html';
+                
+            } catch (error) {
+                alert('Failed to submit test. Please try again.');
+                console.error(error);
+            }
+        }
+
+        if (!userId) {
+            window.location.href = 'login.html';
+        } else {
+            loadQuestions();
+        }
+    </script>
+</body>
+</html>

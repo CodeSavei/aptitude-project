@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course - Aptitude Project</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+        <div class="navbar-user">
+            <span><a href="main.html" class="link">Back to Menu</a></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Complete Course</h1>
+        
+        <div class="course-info" style="text-align: center; margin: 30px 0;">
+            <p>Current Level: <span class="level" id="currentLevel">1</span></p>
+            <p style="color: var(--text-secondary);">Complete each level to progress!</p>
+        </div>
+        
+        <button class="btn btn-primary btn-block" onclick="startCourseTest()">Start Test Level 1</button>
+    </div>
+
+    <script>
+        var userId = localStorage.getItem('userId');
+        
+        if (!userId) {
+            window.location.href = 'login.html';
+        }
+        
+        function startCourseTest() {
+            fetch('/api/questions/random?count=5')
+                .then(response => response.json())
+                .then(questions => {
+                    if (questions.length === 0) {
+                        alert('No questions available.');
+                        return;
+                    }
+                    localStorage.setItem('testQuestions', JSON.stringify(questions));
+                    localStorage.setItem('testMode', 'course');
+                    window.location.href = 'test.html';
+                })
+                .catch(error => {
+                    alert('Failed to load questions.');
+                });
+        }
+    </script>
+</body>
+</html>
