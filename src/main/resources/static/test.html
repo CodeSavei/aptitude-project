@@ -49,6 +49,8 @@
         let currentIndex = 0;
         let userAnswers = [];
         let userId = localStorage.getItem('userId');
+        let testMode = localStorage.getItem('testMode');
+        let currentTopic = localStorage.getItem('currentTopic');
 
         function loadQuestions() {
             const storedQuestions = localStorage.getItem('testQuestions');
@@ -125,8 +127,21 @@
                 selectedOption: selectedOption.value
             });
             
+            // Calculate score
+            let score = 0;
+            userAnswers.forEach(answer => {
+                const q = questions.find(q => q.id === answer.questionId);
+                if (q && answer.selectedOption === q.correctOption) {
+                    score++;
+                }
+            });
+            
+            // Save topic progress if in topic mode
+            if (testMode === 'topic' && currentTopic) {
+                saveTopicProgress(currentTopic, score, questions.length);
+            }
+            
             try {
-                const testMode = localStorage.getItem('testMode');
                 let url = '/api/test/submit';
                 
                 if (testMode === 'course') {
@@ -149,9 +164,34 @@
                 window.location.href = 'result.html';
                 
             } catch (error) {
-                alert('Failed to submit test. Please try again.');
-                console.error(error);
+                // If API fails, still show results
+                localStorage.setItem('testScore', score);
+                localStorage.setItem('testTotal', questions.length);
+                window.location.href = 'result.html';
             }
+        }
+        
+        function saveTopicProgress(topic, score, total) {
+            const passed = score >= Math.ceil(total * 0.6);
+            let progress = localStorage.getItem('topicProgress_' + userId);
+            progress = progress ? JSON.parse(progress) : {};
+            
+            if (!progress[topic]) {
+                progress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            }
+            
+            progress[topic].attempts++;
+            progress[topic].totalQuestions = total;
+            
+            if (score > progress[topic].bestScore) {
+                progress[topic].bestScore = score;
+            }
+            
+            if (passed) {
+                progress[topic].completed = true;
+            }
+            
+            localStorage.setItem('topicProgress_' + userId, JSON.stringify(progress));
         }
 
         if (!userId) {

@@ -18,37 +18,156 @@
     <div class="container">
         <h1>Complete Course</h1>
         
-        <div class="course-info" style="text-align: center; margin: 30px 0;">
-            <p>Current Level: <span class="level" id="currentLevel">1</span></p>
-            <p style="color: var(--text-secondary);">Complete each level to progress!</p>
+        <div class="form-group">
+            <label>Select Topic:</label>
+            <select id="topicSelect" onchange="topicChanged()">
+                <option value="">-- Select a topic --</option>
+            </select>
         </div>
         
-        <button class="btn btn-primary btn-block" onclick="startCourseTest()">Start Test Level 1</button>
+        <div id="topicInfo" class="form-group" style="display: none;">
+            <p>Status: <span id="topicStatus"></span></p>
+            <p>Attempts: <span id="topicAttempts">0</span></p>
+            <p>Best Score: <span id="topicBestScore">-</span></p>
+            <button class="btn btn-primary btn-block" id="startTopicBtn" onclick="startTopicTest()">Start Topic</button>
+        </div>
+        
+        <div class="course-info" style="text-align: center; margin: 30px 0;">
+            <p>Topics Completed: <span id="completedCount">0</span> / <span id="totalCount">11</span></p>
+        </div>
+        
+        <div id="congratsMessage" style="display: none; text-align: center; padding: 30px; background-color: var(--bg-dark); border-radius: 12px;">
+            <h2>Congratulations!</h2>
+            <p>You have completed all topics!</p>
+            <button class="btn btn-primary" onclick="resetCourse()">Restart Course</button>
+        </div>
     </div>
 
     <script>
         var userId = localStorage.getItem('userId');
         
+        var topics = [
+            'Problem on trains',
+            'time and work',
+            'profit and loss',
+            'problems on ages',
+            'average',
+            'permutation and combination',
+            'time and distance',
+            'simple interest',
+            'percentage',
+            'ratio and proportion',
+            'probability'
+        ];
+        
         if (!userId) {
             window.location.href = 'login.html';
         }
         
-        function startCourseTest() {
-            fetch('/api/questions/random?count=5')
+        function getTopicProgress() {
+            var progress = localStorage.getItem('topicProgress_' + userId);
+            if (progress) {
+                return JSON.parse(progress);
+            }
+            var initialProgress = {};
+            topics.forEach(function(topic) {
+                initialProgress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            });
+            localStorage.setItem('topicProgress_' + userId, JSON.stringify(initialProgress));
+            return initialProgress;
+        }
+        
+        function saveTopicProgress(progress) {
+            localStorage.setItem('topicProgress_' + userId, JSON.stringify(progress));
+        }
+        
+        function init() {
+            var select = document.getElementById('topicSelect');
+            topics.forEach(function(topic) {
+                var option = document.createElement('option');
+                option.value = topic;
+                option.textContent = topic;
+                select.appendChild(option);
+            });
+            updateOverallProgress();
+        }
+        
+        function updateOverallProgress() {
+            var progress = getTopicProgress();
+            var completed = 0;
+            topics.forEach(function(topic) {
+                if (progress[topic] && progress[topic].completed) {
+                    completed++;
+                }
+            });
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = topics.length;
+            
+            if (completed === topics.length) {
+                document.getElementById('congratsMessage').style.display = 'block';
+                document.querySelector('.container > .form-group').style.display = 'none';
+            }
+        }
+        
+        function topicChanged() {
+            var select = document.getElementById('topicSelect');
+            var topic = select.value;
+            var infoDiv = document.getElementById('topicInfo');
+            
+            if (!topic) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            var progress = getTopicProgress();
+            var topicData = progress[topic] || { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            
+            var statusText = topicData.completed ? 'Completed' : (topicData.attempts > 0 ? 'In Progress' : 'Not Started');
+            document.getElementById('topicStatus').textContent = statusText;
+            document.getElementById('topicAttempts').textContent = topicData.attempts;
+            document.getElementById('topicBestScore').textContent = topicData.totalQuestions > 0 ? topicData.bestScore + '/' + topicData.totalQuestions : '-';
+            
+            infoDiv.style.display = 'block';
+        }
+        
+        function startTopicTest() {
+            var select = document.getElementById('topicSelect');
+            var topic = select.value;
+            
+            if (!topic) {
+                alert('Please select a topic');
+                return;
+            }
+            
+            fetch('/api/questions/topic/' + encodeURIComponent(topic) + '/random?count=5')
                 .then(response => response.json())
                 .then(questions => {
                     if (questions.length === 0) {
-                        alert('No questions available.');
+                        alert('No questions available for this topic.');
                         return;
                     }
+                    localStorage.setItem('currentTopic', topic);
                     localStorage.setItem('testQuestions', JSON.stringify(questions));
-                    localStorage.setItem('testMode', 'course');
+                    localStorage.setItem('testMode', 'topic');
                     window.location.href = 'test.html';
                 })
                 .catch(error => {
                     alert('Failed to load questions.');
                 });
         }
+        
+        function resetCourse() {
+            if (confirm('Are you sure you want to reset your course progress?')) {
+                var initialProgress = {};
+                topics.forEach(function(topic) {
+                    initialProgress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+                });
+                localStorage.setItem('topicProgress_' + userId, JSON.stringify(initialProgress));
+                window.location.reload();
+            }
+        }
+        
+        init();
     </script>
 </body>
 </html>

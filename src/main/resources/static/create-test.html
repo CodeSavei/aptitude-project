@@ -21,24 +21,48 @@
         <div class="form-group">
             <label>Select Topics:</label>
             <div class="checkbox-group">
-                <input type="checkbox" id="topicMath" value="Math" checked>
-                <label for="topicMath">Math</label>
+                <input type="checkbox" id="topicProblemOnTrains" value="Problem on trains">
+                <label for="topicProblemOnTrains">Problem on trains</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="topicScience" value="Science">
-                <label for="topicScience">Science</label>
+                <input type="checkbox" id="topicTimeAndWork" value="time and work">
+                <label for="topicTimeAndWork">Time and work</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="topicGeography" value="Geography">
-                <label for="topicGeography">Geography</label>
+                <input type="checkbox" id="topicProfitAndLoss" value="profit and loss">
+                <label for="topicProfitAndLoss">Profit and loss</label>
             </div>
-             <div class="checkbox-group">
-                <input type="checkbox" id="topicLogical" value="Logical">
-                <label for="topicLogical">Logical</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicProblemsOnAges" value="problems on ages">
+                <label for="topicProblemsOnAges">Problems on ages</label>
             </div>
-             <div class="checkbox-group">
-                <input type="checkbox" id="topicVerbal" value="Verbal">
-                <label for="topicVerbal">Verbal</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicAverage" value="average">
+                <label for="topicAverage">Average</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicPermutationAndCombination" value="permutation and combination">
+                <label for="topicPermutationAndCombination">Permutation and combination</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicTimeAndDistance" value="time and distance">
+                <label for="topicTimeAndDistance">Time and distance</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicSimpleInterest" value="simple interest">
+                <label for="topicSimpleInterest">Simple interest</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicPercentage" value="percentage">
+                <label for="topicPercentage">Percentage</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicRatioAndProportion" value="ratio and proportion">
+                <label for="topicRatioAndProportion">Ratio and proportion</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="topicProbability" value="probability">
+                <label for="topicProbability">Probability</label>
             </div>
         </div>
         
@@ -56,41 +80,83 @@
 
     <script>
         async function startTest() {
-            const mathSelected = document.getElementById('topicMath').checked;
-            const scienceSelected = document.getElementById('topicScience').checked;
-            const geoSelected = document.getElementById('topicGeography').checked;
-            const logSelected = document.getElementById('topicLogical').checked;
-            const verbSelected = document.getElementById('topicVerbal').checked;
+            const problemOnTrainsSelected = document.getElementById('topicProblemOnTrains').checked;
+            const timeAndWorkSelected = document.getElementById('topicTimeAndWork').checked;
+            const profitAndLossSelected = document.getElementById('topicProfitAndLoss').checked;
+            const problemsOnAgesSelected = document.getElementById('topicProblemsOnAges').checked;
+            const averageSelected = document.getElementById('topicAverage').checked;
+            const permutationAndCombinationSelected = document.getElementById('topicPermutationAndCombination').checked;
+            const timeAndDistanceSelected = document.getElementById('topicTimeAndDistance').checked;
+            const simpleInterestSelected = document.getElementById('topicSimpleInterest').checked;
+            const percentageSelected = document.getElementById('topicPercentage').checked;
+            const ratioAndProportionSelected = document.getElementById('topicRatioAndProportion').checked;
+            const probabilitySelected = document.getElementById('topicProbability').checked;
             const count = document.getElementById('questionCount').value;
             
             let allQuestions = [];
             
-            if (mathSelected) {
-                const response = await fetch('/api/questions/topic/Math/random?count=' + count);
+            if (problemOnTrainsSelected) {
+                const response = await fetch('/api/questions/topic/Problem on trains/random?count=' + count);
                 const data = await response.json();
                 allQuestions = allQuestions.concat(data);
             }
             
-            if (scienceSelected) {
-                const response = await fetch('/api/questions/topic/Science/random?count=' + count);
+            if (timeAndWorkSelected) {
+                const response = await fetch('/api/questions/topic/time and work/random?count=' + count);
                 const data = await response.json();
                 allQuestions = allQuestions.concat(data);
             }
             
-            if (geoSelected) {
-                const response = await fetch('/api/questions/topic/Geography/random?count=' + count);
+            if (profitAndLossSelected) {
+                const response = await fetch('/api/questions/topic/profit and loss/random?count=' + count);
                 const data = await response.json();
                 allQuestions = allQuestions.concat(data);
             }
             
-            if (logSelected) {
-                const response = await fetch('/api/questions/topic/Logical/random?count=' + count);
+            if (problemsOnAgesSelected) {
+                const response = await fetch('/api/questions/topic/problems on ages/random?count=' + count);
                 const data = await response.json();
                 allQuestions = allQuestions.concat(data);
             }
             
-            if (verbSelected) {
-                const response = await fetch('/api/questions/topic/Verbal/random?count=' + count);
+            if (averageSelected) {
+                const response = await fetch('/api/questions/topic/average/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (permutationAndCombinationSelected) {
+                const response = await fetch('/api/questions/topic/permutation and combination/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (timeAndDistanceSelected) {
+                const response = await fetch('/api/questions/topic/time and distance/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (simpleInterestSelected) {
+                const response = await fetch('/api/questions/topic/simple interest/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (percentageSelected) {
+                const response = await fetch('/api/questions/topic/percentage/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (ratioAndProportionSelected) {
+                const response = await fetch('/api/questions/topic/ratio and proportion/random?count=' + count);
+                const data = await response.json();
+                allQuestions = allQuestions.concat(data);
+            }
+            
+            if (probabilitySelected) {
+                const response = await fetch('/api/questions/topic/probability/random?count=' + count);
                 const data = await response.json();
                 allQuestions = allQuestions.concat(data);
             }

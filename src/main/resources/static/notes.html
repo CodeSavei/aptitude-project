@@ -3,8 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes - Aptitude Project</title>
+    <title>Notes - Aptitude Practice</title>
     <link rel="stylesheet" href="global.css">
+    <style>
+        /* Notes Page Specific Styles */
+        .notes-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            margin-top: 0;
+        }
+
+        /* Sidebar Styles */
+        .notes-sidebar {
+            width: 280px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            flex-shrink: 0;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h2 {
+            color: var(--accent-yellow);
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .topic-list {
+            list-style: none;
+        }
+
+        .topic-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            color: var(--text-secondary);
+        }
+
+        .topic-item:hover {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            border-left-color: var(--accent-yellow);
+        }
+
+        .topic-item.active {
+            background-color: var(--bg-dark);
+            color: var(--accent-yellow);
+            border-left-color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        /* Main Content Area */
+        .notes-main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .topic-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .topic-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topic-title {
+            color: var(--accent-yellow);
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent-yellow);
+        }
+
+        .content-section {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--accent-yellow);
+        }
+
+        .content-section h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .formula-box {
+            background-color: var(--bg-dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .formula-box strong {
+            color: var(--accent-yellow);
+        }
+
+        .example-box {
+            background-color: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: var(--accent-yellow);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .example-box .problem {
+            color: var(--text-primary);
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .example-box .solution {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .example-box .solution strong {
+            color: var(--accent-yellow);
+        }
+
+        .key-points {
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .key-points li strong {
+            color: var(--accent-yellow);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .notes-container {
+                flex-direction: column;
+            }
+
+            .notes-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .notes-main {
+                padding: 20px;
+            }
+
+            .topic-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .notes-sidebar::-webkit-scrollbar,
+        .notes-main::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .notes-sidebar::-webkit-scrollbar-track,
+        .notes-main::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        .notes-sidebar::-webkit-scrollbar-thumb,
+        .notes-main::-webkit-scrollbar-thumb {
+            background: var(--accent-yellow);
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -15,61 +214,1442 @@
         </div>
     </nav>
 
-    <div class="container">
-        <h1>Study Notes</h1>
-        
-        <div class="note-section">
-            <h3>Math Formulas</h3>
-            <div class="note-content">
-                <ul>
-                    <li><strong>Speed</strong> = Distance / Time</li>
-                    <li><strong>Average</strong> = Sum of values / Number of values</li>
-                    <li><strong>Percentage</strong> = (Part / Whole) × 100</li>
-                    <li><strong>Simple Interest</strong> = (P × R × T) / 100</li>
-                    <li><strong>Profit %</strong> = (Profit / Cost Price) × 100</li>
-                    <li><strong>Area of Rectangle</strong> = Length × Width</li>
-                </ul>
+    <div class="notes-container">
+        <!-- Sidebar with Topic List -->
+        <div class="notes-sidebar">
+            <div class="sidebar-header">
+                <h2>Select Topic</h2>
             </div>
+            <ul class="topic-list">
+                <li class="topic-item active" data-topic="trains">Problem on Trains</li>
+                <li class="topic-item" data-topic="time-work">Time and Work</li>
+                <li class="topic-item" data-topic="profit-loss">Profit and Loss</li>
+                <li class="topic-item" data-topic="ages">Problems on Ages</li>
+                <li class="topic-item" data-topic="average">Average</li>
+                <li class="topic-item" data-topic="permutation">Permutation and Combination</li>
+                <li class="topic-item" data-topic="time-distance">Time and Distance</li>
+                <li class="topic-item" data-topic="simple-interest">Simple Interest</li>
+                <li class="topic-item" data-topic="percentage">Percentage</li>
+                <li class="topic-item" data-topic="ratio">Ratio and Proportion</li>
+                <li class="topic-item" data-topic="probability">Probability</li>
+            </ul>
         </div>
-        
-        <div class="note-section">
-            <h3>Logical Reasoning Tips</h3>
-            <div class="note-content">
-                <ul>
-                    <li>Look for patterns in sequences</li>
-                    <li>Break complex problems into smaller parts</li>
-                    <li>Use elimination for multiple choice</li>
-                    <li>Practice mental math to save time</li>
-                    <li>Read questions carefully before answering</li>
-                </ul>
+
+        <!-- Main Content Area -->
+        <div class="notes-main">
+            <!-- Problem on Trains -->
+            <div class="topic-content active" id="trains">
+                <h1 class="topic-title">Problem on Trains</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Problems on trains involve calculating the time taken by a train to pass a stationary object like a pole, platform, or another train. The key concept is understanding relative speed and how the length of the train affects the time taken to cross objects of different lengths.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Speed Conversion Formulas</h3>
+                    <div class="formula-box">
+                        <strong>km/hr to m/s:</strong> Speed (m/s) = Speed (km/hr) × (5/18)<br><br>
+                        <strong>m/s to km/hr:</strong> Speed (km/hr) = Speed (m/s) × (18/5)
+                    </div>
+                    <p>This conversion is essential because train problems often require consistent units. The factor 5/18 comes from dividing 1000 meters by 3600 seconds, which equals 5/18.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Key Formulas</h3>
+                    <ul class="key-points">
+                        <li><strong>Time to pass a pole/stationary object:</strong> Time = Length of Train / Speed</li>
+                        <li><strong>Time to pass a platform:</strong> Time = (Length of Train + Length of Platform) / Speed</li>
+                        <li><strong>Time to pass another train (same direction):</strong> Time = (Length1 + Length2) / (Speed1 - Speed2)</li>
+                        <li><strong>Time to pass another train (opposite direction):</strong> Time = (Length1 + Length2) / (Speed1 + Speed2)</li>
+                        <li><strong>Relative speed (same direction):</strong> Difference of speeds</li>
+                        <li><strong>Relative speed (opposite direction):</strong> Sum of speeds</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Important Concepts</h3>
+                    <ul class="key-points">
+                        <li><strong>Formation of Train:</strong> When a train passes a point, it travels a distance equal to its own length.</li>
+                        <li><strong>Platform Crossing:</strong> The train must travel its own length plus the platform length to completely cross it.</li>
+                        <li><strong>Two Trains:</strong> When two trains cross each other, the total distance covered is the sum of both lengths.</li>
+                        <li><strong>Direction Matters:</strong> Same direction uses difference of speeds, opposite direction uses sum of speeds.</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Train Passing a Pole</h4>
+                        <p class="problem">A train 150 meters long is running at a speed of 60 km/hr. How long will it take to pass a pole?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Convert speed to m/s<br>
+                            60 km/hr = 60 × (5/18) = 50/3 = 16.67 m/s<br><br>
+                            <strong>Step 2:</strong> Apply formula<br>
+                            Time = Length / Speed = 150 / (50/3) = 150 × 3/50 = 9 seconds<br><br>
+                            <strong>Answer:</strong> 9 seconds
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Train Passing a Platform</h4>
+                        <p class="problem">A train 200 meters long passes a platform 300 meters long in 25 seconds. Find the speed of the train in km/hr.</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Total distance to cover = Train length + Platform length<br>
+                            Distance = 200 + 300 = 500 meters<br><br>
+                            <strong>Step 2:</strong> Calculate speed in m/s<br>
+                            Speed = Distance / Time = 500 / 25 = 20 m/s<br><br>
+                            <strong>Step 3:</strong> Convert to km/hr<br>
+                            Speed = 20 × (18/5) = 72 km/hr<br><br>
+                            <strong>Answer:</strong> 72 km/hr
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Two Trains Passing Each Other</h4>
+                        <p class="problem">Two trains 150m and 200m long are running on parallel tracks in opposite directions at 45 km/hr and 55 km/hr respectively. How long will they take to completely pass each other?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Calculate relative speed (opposite directions)<br>
+                            Relative Speed = 45 + 55 = 100 km/hr<br><br>
+                            <strong>Step 2:</strong> Convert to m/s<br>
+                            100 × (5/18) = 500/18 = 250/9 m/s<br><br>
+                            <strong>Step 3:</strong> Total distance = Sum of lengths<br>
+                            Distance = 150 + 200 = 350 meters<br><br>
+                            <strong>Step 4:</strong> Calculate time<br>
+                            Time = 350 / (250/9) = 350 × 9 / 250 = 12.6 seconds<br><br>
+                            <strong>Answer:</strong> 12.6 seconds
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always convert units before calculations to ensure consistency</li>
+                        <li>Remember that when passing a stationary object, only the train's length matters</li>
+                        <li>When passing a platform or bridge, add both lengths</li>
+                        <li>For two trains, always add their lengths to get total distance</li>
+                        <li>Draw a diagram if the problem seems complex to visualize the scenario</li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        
-        <div class="note-section">
-            <h3>General Knowledge</h3>
-            <div class="note-content">
-                <ul>
-                    <li><strong>Capital of France:</strong> Paris</li>
-                    <li><strong>Capital of Japan:</strong> Tokyo</li>
-                    <li><strong>Red Planet:</strong> Mars</li>
-                    <li><strong>Largest Planet:</strong> Jupiter</li>
-                    <li><strong>Water Chemical Symbol:</strong> H2O</li>
-                </ul>
+
+            <!-- Time and Work -->
+            <div class="topic-content" id="time-work">
+                <h1 class="topic-title">Time and Work</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Time and work problems deal with calculating how long it takes to complete a job when one or more people or machines work together. The fundamental principle is that work done is proportional to the time spent and the efficiency of the worker.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Work Done:</strong> Work = Rate × Time<br><br>
+                        <strong>Rate of Work:</strong> Rate = Work / Time<br><br>
+                        <strong>Time taken:</strong> Time = Work / Rate<br><br>
+                        <strong>Complete work = 1 unit</strong><br><br>
+                        <strong>Work done by A in 1 day:</strong> 1/A (where A = days to complete work alone)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Combined Work Formula</h3>
+                    <div class="formula-box">
+                        <strong>Two people A and B working together:</strong><br>
+                        1/T = 1/A + 1/B<br><br>
+                        <strong>Time taken together:</strong> T = (A × B) / (A + B)<br><br>
+                        <strong>Three people A, B, and C:</strong><br>
+                        1/T = 1/A + 1/B + 1/C
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Efficiency and Work Relationship</h3>
+                    <ul class="key-points">
+                        <li><strong>If A is x times efficient as B:</strong> Efficiency ratio A:B = x:1</li>
+                        <li><strong>Time ratio:</strong> Time taken by A : Time taken by B = 1:x</li>
+                        <li><strong>Work done is inversely proportional to time taken</strong></li>
+                        <li><strong>If A takes x days, A's daily work = 1/x of total work</strong></li>
+                        <li><strong>If A and B work for n days:</strong> Work done = n × (1/A + 1/B)</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Two Workers Together</h4>
+                        <p class="problem">A can do a piece of work in 10 days and B can do it in 15 days. How long will they take to complete the work if they work together?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Calculate individual work rates<br>
+                            A's work per day = 1/10<br>
+                            B's work per day = 1/15<br><br>
+                            <strong>Step 2:</strong> Add the rates<br>
+                            Combined work per day = 1/10 + 1/15 = 3/30 + 2/30 = 5/30 = 1/6<br><br>
+                            <strong>Step 3:</strong> Calculate time<br>
+                            Time = 1 / (1/6) = 6 days<br><br>
+                            <strong>Answer:</strong> 6 days
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Using the Direct Formula</h4>
+                        <p class="problem">A takes 8 hours and B takes 12 hours to complete a job. How long will they take working together?</p>
+                        <p class="solution">
+                            <strong>Using formula T = (A × B) / (A + B):</strong><br>
+                            T = (8 × 12) / (8 + 12) = 96 / 20 = 4.8 hours<br><br>
+                            <strong>Answer:</strong> 4.8 hours (or 4 hours 48 minutes)
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Three Workers</h4>
+                        <p class="problem">A, B, and C can complete a work in 20, 30, and 60 days respectively. How long will they take working together?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Calculate individual rates<br>
+                            A: 1/20, B: 1/30, C: 1/60 per day<br><br>
+                            <strong>Step 2:</strong> Add the rates<br>
+                            1/20 + 1/30 + 1/60 = 3/60 + 2/60 + 1/60 = 6/60 = 1/10<br><br>
+                            <strong>Step 3:</strong> Calculate time<br>
+                            Time = 1 / (1/10) = 10 days<br><br>
+                            <strong>Answer:</strong> 10 days
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Work Done by One Person After Another</h4>
+                        <p class="problem">A and B together can complete a work in 12 days. A alone can complete it in 20 days. How long will B alone take to complete the work?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Let B take x days alone<br>
+                            Combined work = 1/20 + 1/x = 1/12<br><br>
+                            <strong>Step 2:</strong> Solve for x<br>
+                            1/x = 1/12 - 1/20 = 5/60 - 3/60 = 2/60 = 1/30<br><br>
+                            <strong>Step 3:</strong> x = 30 days<br><br>
+                            <strong>Answer:</strong> B takes 30 days alone
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always assume total work = 1 unit for easier calculations</li>
+                        <li>Work done is additive, so add individual work rates when people work together</li>
+                        <li>Remember that efficiency and time are inversely related</li>
+                        <li>For pipes and tanks (filling/emptying), apply the same principles with positive and negative rates</li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        
-        <div class="note-section">
-            <h3>Computer Basics</h3>
-            <div class="note-content">
-                <ul>
-                    <li><strong>CPU:</strong> Central Processing Unit - brain of computer</li>
-                    <li><strong>RAM:</strong> Temporary memory</li>
-                    <li><strong>ROM:</strong> Permanent memory</li>
-                    <li><strong>HTML:</strong> HyperText Markup Language</li>
-                    <li><strong>SQL:</strong> Database query language</li>
-                </ul>
+
+            <!-- Profit and Loss -->
+            <div class="topic-content" id="profit-loss">
+                <h1 class="topic-title">Profit and Loss</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Profit and loss problems deal with buying and selling of goods. The key is understanding the relationship between cost price, selling price, profit or loss, and their respective percentages. These concepts are fundamental in business mathematics.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Terms and Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Cost Price (CP):</strong> Price at which an item is bought<br><br>
+                        <strong>Selling Price (SP):</strong> Price at which an item is sold<br><br>
+                        <strong>Profit = SP - CP</strong> (when SP > CP)<br><br>
+                        <strong>Loss = CP - SP</strong> (when CP > SP)<br><br>
+                        <strong>Profit % = (Profit / CP) × 100</strong><br><br>
+                        <strong>Loss % = (Loss / CP) × 100</strong>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Finding Selling Price</h3>
+                    <div class="formula-box">
+                        <strong>SP with x% Profit:</strong> SP = CP × (1 + x/100)<br><br>
+                        <strong>SP with x% Loss:</strong> SP = CP × (1 - x/100)<br><br>
+                        <strong>SP when profit% and discount% given:</strong><br>
+                        First apply discount, then calculate profit on reduced price
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Finding Cost Price</h3>
+                    <div class="formula-box">
+                        <strong>CP when SP and x% profit given:</strong> CP = SP / (1 + x/100)<br><br>
+                        <strong>CP when SP and x% loss given:</strong> CP = SP / (1 - x/100)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Special Cases</h3>
+                    <ul class="key-points">
+                        <li><strong>Successive Profit/Loss:</strong> When profit% and loss% are applied successively, use the formula for successive percentage changes</li>
+                        <li><strong>Faulty Weights:</strong> Gain% = [(Error)/(True Value - Error)] × 100</li>
+                        <li><strong>Discount:</strong> SP = MP × (1 - Discount%) where MP is marked price</li>
+                        <li><strong>When two equal profit% and loss%:</strong> Always results in loss</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Profit Calculation</h4>
+                        <p class="problem">An article is bought for Rs. 500 and sold for Rs. 650. Find the profit percentage.</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Calculate profit<br>
+                            Profit = SP - CP = 650 - 500 = Rs. 150<br><br>
+                            <strong>Step 2:</strong> Calculate profit percentage<br>
+                            Profit% = (150 / 500) × 100 = 30%<br><br>
+                            <strong>Answer:</strong> 30% profit
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Finding Selling Price</h4>
+                        <p class="problem">A shopkeeper buys an article for Rs. 1200 and wants to make a profit of 25%. What should be the selling price?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            SP = CP × (1 + Profit%/100)<br>
+                            SP = 1200 × (1 + 25/100) = 1200 × 1.25 = Rs. 1500<br><br>
+                            <strong>Answer:</strong> Selling price = Rs. 1500
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Loss Calculation</h4>
+                        <p class="problem">A man sells a table for Rs. 2760 and loses 8%. What was the cost price?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            CP = SP / (1 - Loss%/100)<br>
+                            CP = 2760 / (1 - 8/100) = 2760 / 0.92 = Rs. 3000<br><br>
+                            <strong>Answer:</strong> Cost price = Rs. 3000
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Successive Discounts</h4>
+                        <p class="problem">A shirt is marked at Rs. 2000. First a discount of 20% is given, then another discount of 10% on the reduced price. Find the final selling price.</p>
+                        <p class="solution">
+                            <strong>Method 1: Step by step</strong><br>
+                            After 20% discount: 2000 × (1 - 20/100) = 2000 × 0.80 = Rs. 1600<br>
+                            After 10% discount: 1600 × (1 - 10/100) = 1600 × 0.90 = Rs. 1440<br><br>
+                            <strong>Method 2: Single equivalent discount</strong><br>
+                            Equivalent discount = 20 + 10 - (20×10)/100 = 28%<br>
+                            SP = 2000 × (1 - 28/100) = 2000 × 0.72 = Rs. 1440<br><br>
+                            <strong>Answer:</strong> Final selling price = Rs. 1440
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always calculate profit/loss based on cost price, not selling price</li>
+                        <li>For successive percentage changes, apply each change sequentially to avoid errors</li>
+                        <li>When finding CP from SP with profit%, divide SP by (1 + profit/100)</li>
+                        <li>Remember that selling price must be greater than cost price for profit, and vice versa</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Problems on Ages -->
+            <div class="topic-content" id="ages">
+                <h1 class="topic-title">Problems on Ages</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Problems on ages involve finding current ages, past ages, or future ages of people based on given relationships and conditions. The key principle is that the age difference between any two people remains constant over time.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Key Concepts</h3>
+                    <ul class="key-points">
+                        <li><strong>Age difference:</strong> Always remains constant regardless of time</li>
+                        <li><strong>Present age:</strong> Let present age = x years</li>
+                        <li><strong>Age after n years:</strong> Present age + n</li>
+                        <li><strong>Age n years ago:</strong> Present age - n</li>
+                        <li><strong>Ratio given:</strong> Use ratio to set up equations</li>
+                        <li><strong>Product of ages:</strong> Sometimes given, useful for quadratic equations</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>If current ages are A and B:</strong><br>
+                        Ratio A:B = m:n<br><br>
+                        <strong>Age after k years:</strong> A+k and B+k (ratio may change)<br><br>
+                        <strong>Age k years ago:</strong> A-k and B-k<br><br>
+                        <strong>When ratio changes:</strong><br>
+                        Set up equation: (A + k)/(B + k) = new ratio
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Important Observations</h3>
+                    <ul class="key-points">
+                        <li>The ratio of ages changes with time, but the difference remains constant</li>
+                        <li>If two persons' ages are in ratio m:n, then their ages can be expressed as mx and nx</li>
+                        <li>The present age is always the best starting point for variables</li>
+                        <li>When the ratio is given at a specific time (past or future), adjust accordingly</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Current Ratio Given</h4>
+                        <p class="problem">The ratio of ages of A and B is 3:5. If A is 12 years old, how old is B?</p>
+                        <p class="solution">
+                            <strong>Using ratio:</strong><br>
+                            A:B = 3:5<br>
+                            A = 3x = 12, so x = 4<br>
+                            B = 5x = 5 × 4 = 20 years<br><br>
+                            <strong>Answer:</strong> B is 20 years old
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Future Ratio Given</h4>
+                        <p class="problem">Father is three times as old as his son. After 5 years, he will be two and a half times as old as his son. Find their present ages.</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Let son's present age = x years<br>
+                            Father's present age = 3x years<br><br>
+                            <strong>Step 2:</strong> Set up equation for future<br>
+                            (3x + 5) = 2.5 × (x + 5)<br><br>
+                            <strong>Step 3:</strong> Solve the equation<br>
+                            3x + 5 = 2.5x + 12.5<br>
+                            3x - 2.5x = 12.5 - 5<br>
+                            0.5x = 7.5<br>
+                            x = 15<br><br>
+                            <strong>Step 4:</strong> Find both ages<br>
+                            Son = 15 years, Father = 3 × 15 = 45 years<br><br>
+                            <strong>Answer:</strong> Son is 15, Father is 45
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Past Ratio Given</h4>
+                        <p class="problem">Ten years ago, P was half as old as Q. If P is now 20 years old, how old is Q now?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Current age of P = 20 years<br>
+                            Ten years ago, P was 20 - 10 = 10 years old<br><br>
+                            <strong>Step 2:</strong> Use the ratio<br>
+                            10 = (1/2) × Q's age 10 years ago<br>
+                            Q's age 10 years ago = 20 years<br><br>
+                            <strong>Step 3:</strong> Find current age<br>
+                            Q's current age = 20 + 10 = 30 years<br><br>
+                            <strong>Answer:</strong> Q is 30 years old
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Age Difference Application</h4>
+                        <p class="problem">The sum of ages of a mother and daughter is 50 years. Five years ago, the mother was four times as old as the daughter. Find their present ages.</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Let daughter's present age = x years<br>
+                            Mother's present age = (50 - x) years<br><br>
+                            <strong>Step 2:</strong> Set up equation for 5 years ago<br>
+                            (50 - x - 5) = 4 × (x - 5)<br>
+                            (45 - x) = 4x - 20<br><br>
+                            <strong>Step 3:</strong> Solve<br>
+                            45 + 20 = 4x + x<br>
+                            65 = 5x<br>
+                            x = 13<br><br>
+                            <strong>Step 4:</strong> Find both ages<br>
+                            Daughter = 13 years, Mother = 50 - 13 = 37 years<br><br>
+                            <strong>Answer:</strong> Daughter is 13, Mother is 37
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always express all ages in terms of one variable (preferably the present)</li>
+                        <li>Remember that age difference remains constant over time</li>
+                        <li>When setting up equations, ensure both sides are from the same time point (all present, all past, or all future)</li>
+                        <li>Use the ratio to express multiple ages when a relationship is given</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Average -->
+            <div class="topic-content" id="average">
+                <h1 class="topic-title">Average</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Average is a measure of central tendency that represents the typical value in a dataset. It is calculated by summing all values and dividing by the number of values. Averages are widely used in statistics, academics, and daily life for comparison and analysis.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Arithmetic Mean (Average):</strong><br>
+                        Average = (Sum of all values) / (Number of values)<br><br>
+                        <strong>Weighted Average:</strong><br>
+                        Weighted Avg = Σ(weight × value) / Σ(weights)<br><br>
+                        <strong>Using Deviation:</strong><br>
+                        Average = Assumed Avg + (Σdeviation) / n
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Average Speed Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Average Speed (different distances):</strong><br>
+                        Avg Speed = Total Distance / Total Time<br><br>
+                        <strong>NOT Average of Speeds:</strong><br>
+                        Avg Speed ≠ (Speed1 + Speed2) / 2<br><br>
+                        <strong>Same distance at different speeds:</strong><br>
+                        Avg Speed = 2 × S1 × S2 / (S1 + S2)<br><br>
+                        <strong>Same time at different speeds:</strong><br>
+                        Avg Speed = (S1 + S2) / 2
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Effect of Adding/Removing Values</h3>
+                    <ul class="key-points">
+                        <li><strong>New sum:</strong> Old sum ± new value</li>
+                        <li><strong>New average after adding:</strong> (Old sum + new value) / (n + 1)</li>
+                        <li><strong>New average after removing:</strong> (Old sum - removed value) / (n - 1)</li>
+                        <li><strong>If all values equal:</strong> Average = that value</li>
+                        <li><strong>Deviation method:</strong> Useful when values are large or have a pattern</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Average</h4>
+                        <p class="problem">Find the average of numbers: 10, 20, 30, 40, 50.</p>
+                        <p class="solution">
+                            <strong>Method 1: Direct formula</strong><br>
+                            Sum = 10 + 20 + 30 + 40 + 50 = 150<br>
+                            Number of values = 5<br>
+                            Average = 150 / 5 = 30<br><br>
+                            <strong>Method 2: Using assumed average</strong><br>
+                            Assume average = 30<br>
+                            Deviations: -20, -10, 0, 10, 20<br>
+                            Sum of deviations = 0<br>
+                            Average = 30 + 0/5 = 30<br><br>
+                            <strong>Answer:</strong> 30
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Weighted Average</h4>
+                        <p class="problem">A student scores 80 in Math (weight 3), 75 in Science (weight 2), and 90 in English (weight 1). Find the weighted average.</p>
+                        <p class="solution">
+                            <strong>Calculate weighted sum:</strong><br>
+                            (80 × 3) + (75 × 2) + (90 × 1) = 240 + 150 + 90 = 480<br><br>
+                            <strong>Total weight:</strong><br>
+                            3 + 2 + 1 = 6<br><br>
+                            <strong>Weighted Average:</strong><br>
+                            480 / 6 = 80<br><br>
+                            <strong>Answer:</strong> 80
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Average Speed</h4>
+                        <p class="problem">A car travels 100 km at 50 km/hr and returns the same distance at 25 km/hr. Find the average speed for the entire journey.</p>
+                        <p class="solution">
+                            <strong>Note:</strong> Average speed ≠ (50 + 25)/2 = 37.5 km/hr<br><br>
+                            <strong>Total Distance:</strong> 100 + 100 = 200 km<br><br>
+                            <strong>Time for first part:</strong> 100 / 50 = 2 hours<br>
+                            <strong>Time for return:</strong> 100 / 25 = 4 hours<br><br>
+                            <strong>Total Time:</strong> 2 + 4 = 6 hours<br><br>
+                            <strong>Average Speed:</strong> 200 / 6 = 33.33 km/hr<br><br>
+                            <strong>Using Formula:</strong> 2 × 50 × 25 / (50 + 25) = 2500 / 75 = 33.33 km/hr<br><br>
+                            <strong>Answer:</strong> 33.33 km/hr
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Finding Missing Number</h4>
+                        <p class="problem">The average of 6 numbers is 25. If one number is excluded, the average of the remaining 5 numbers is 20. Find the excluded number.</p>
+                        <p class="solution">
+                            <strong>Total sum of 6 numbers:</strong> 6 × 25 = 150<br><br>
+                            <strong>Sum of remaining 5 numbers:</strong> 5 × 20 = 100<br><br>
+                            <strong>Excluded number:</strong> 150 - 100 = 50<br><br>
+                            <strong>Answer:</strong> 50
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Never average the averages directly - always use total sum divided by total count</li>
+                        <li>For average speed, always use total distance divided by total time</li>
+                        <li>The deviation method is faster for large numbers with a common base</li>
+                        <li>When values are in arithmetic progression, average = (first + last)/2</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Permutation and Combination -->
+            <div class="topic-content" id="permutation">
+                <h1 class="topic-title">Permutation and Combination</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Permutation and combination are counting techniques used to calculate the number of ways to arrange or select objects. Permutation considers order (arrangements), while combination does not (selections). These concepts are fundamental in probability and combinatorics.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Key Definitions</h3>
+                    <div class="formula-box">
+                        <strong>Factorial (n!):</strong> n! = n × (n-1) × (n-2) × ... × 2 × 1<br><br>
+                        <strong>0! = 1</strong> (by definition)<br><br>
+                        <strong>Permutation (nPr):</strong> Number of arrangements of r objects from n where ORDER MATTERS<br><br>
+                        <strong>Combination (nCr):</strong> Number of selections of r objects from n where ORDER DOES NOT MATTER
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Permutation:</strong><br>
+                        nPr = n! / (n-r)!<br><br>
+                        <strong>Combination:</strong><br>
+                        nCr = n! / (r! × (n-r)!)<br><br>
+                        <strong>Relationship:</strong><br>
+                        nPr = nCr × r!<br><br>
+                        <strong>Note:</strong> nCr = nC(n-r) (complementary selection)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Special Cases</h3>
+                    <ul class="key-points">
+                        <li><strong>Circular Permutation:</strong> (n-1)! for arranging n distinct objects in a circle</li>
+                        <li><strong>Linear arrangement:</strong> n! for all n objects in a line</li>
+                        <li><strong>Repetition allowed:</strong> n^r for arrangements with repetition</li>
+                        <li><strong>Selection with repetition:</strong> C(n+r-1, r)</li>
+                        <li><strong>Arrangement with restrictions:</strong> Subtract invalid cases from total</li>
+                        <li><strong>nC0 = nCn = 1</strong></li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>When to Use Which</h3>
+                    <ul class="key-points">
+                        <li><strong>Permutation:</strong> Arranging people in rows, letters in words, ranks, positions</li>
+                        <li><strong>Combination:</strong> Selecting committee members, drawing cards, choosing items</li>
+                        <li><strong>Ask yourself:</strong> Does order matter in this arrangement?</li>
+                        <li><strong>Example:</strong> AB and BA are different (Permutation) but same (Combination)</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Permutation</h4>
+                        <p class="problem">How many different ways can 3 books be arranged from 5 different books?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            nPr = n! / (n-r)!<br>
+                            5P3 = 5! / (5-3)! = 120 / 2! = 120 / 2 = 60<br><br>
+                            <strong>Step by step:</strong><br>
+                            First book: 5 choices<br>
+                            Second book: 4 choices<br>
+                            Third book: 3 choices<br>
+                            Total = 5 × 4 × 3 = 60<br><br>
+                            <strong>Answer:</strong> 60 ways
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Basic Combination</h4>
+                        <p class="problem">How many ways can a committee of 3 be chosen from 5 people?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            nCr = n! / (r! × (n-r)!)<br>
+                            5C3 = 5! / (3! × 2!) = 120 / (6 × 2) = 120 / 12 = 10<br><br>
+                            <strong>Using complementary:</strong><br>
+                            5C3 = 5C(5-3) = 5C2 = 10<br><br>
+                            <strong>Answer:</strong> 10 ways
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Circular Permutation</h4>
+                        <p class="problem">In how many ways can 4 people be seated around a round table?</p>
+                        <p class="solution">
+                            <strong>For circular arrangements:</strong><br>
+                            (n-1)! = (4-1)! = 3! = 6<br><br>
+                            <strong>Explanation:</strong><br>
+                            In a circle, rotations of the same arrangement are considered identical. Fix one person's position and arrange the others.<br><br>
+                            <strong>Answer:</strong> 6 ways
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Word Arrangement</h4>
+                        <p class="problem">How many different words can be formed using the letters of "MATHEMATICS"?</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Count total letters<br>
+                            Total = 11 letters<br><br>
+                            <strong>Step 2:</strong> Count repeated letters<br>
+                            M appears 2 times, A appears 2 times, T appears 2 times<br><br>
+                            <strong>Step 3:</strong> Apply formula<br>
+                            Words = 11! / (2! × 2! × 2!) = 39916800 / 8 = 4989600<br><br>
+                            <strong>Answer:</strong> 4,989,600 different words
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Mixed Problem</h4>
+                        <p class="problem">From a deck of 52 cards, how many ways can we select 1 ace and 1 king?</p>
+                        <p class="solution">
+                            <strong>Selecting ace:</strong> 4C1 = 4 ways<br><br>
+                            <strong>Selecting king:</strong> 4C1 = 4 ways<br><br>
+                            <strong>Total ways:</strong> 4 × 4 = 16 ways<br><br>
+                            <strong>Answer:</strong> 16 ways
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Ask "Does order matter?" to decide between permutation and combination</li>
+                        <li>For repeated objects, divide by the factorial of each repetition count</li>
+                        <li>Use nCr = nC(n-r) to simplify calculations when numbers are large</li>
+                        <li>For circular arrangements, always use (n-1)!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Time and Distance -->
+            <div class="topic-content" id="time-distance">
+                <h1 class="topic-title">Time and Distance</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Time and distance problems deal with calculating speed, time, or distance when two of these quantities are known. These problems frequently appear in aptitude tests and require understanding the fundamental relationship between these three variables.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Speed:</strong> Speed = Distance / Time<br><br>
+                        <strong>Distance:</strong> Distance = Speed × Time<br><br>
+                        <strong>Time:</strong> Time = Distance / Speed<br><br>
+                        <strong>Units must be consistent</strong> (km/hr, m/s, etc.)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Unit Conversion</h3>
+                    <div class="formula-box">
+                        <strong>km/hr to m/s:</strong> Multiply by 5/18<br><br>
+                        <strong>m/s to km/hr:</strong> Multiply by 18/5<br><br>
+                        <strong>km/hr to m/min:</strong> Multiply by 1000/60 = 50/3<br><br>
+                        <strong>m/s to m/min:</strong> Multiply by 60
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Average Speed Formulas</h3>
+                    <div class="formula-box">
+                        <strong>General Formula:</strong><br>
+                        Avg Speed = Total Distance / Total Time<br><br>
+                        <strong>Same distance at different speeds S1 and S2:</strong><br>
+                        Avg Speed = 2 × S1 × S2 / (S1 + S2)<br><br>
+                        <strong>Same time at different speeds:</strong><br>
+                        Avg Speed = (S1 + S2) / 2<br><br>
+                        <strong>Note:</strong> Arithmetic mean only works when times are equal!
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Relative Speed</h3>
+                    <ul class="key-points">
+                        <li><strong>Same direction:</strong> Relative speed = S1 - S2 (difference)</li>
+                        <li><strong>Opposite direction:</strong> Relative speed = S1 + S2 (sum)</li>
+                        <li><strong>Time to meet (opposite):</strong> Distance / (S1 + S2)</li>
+                        <li><strong>Time to catch up (same):</strong> Distance / (S1 - S2)</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Calculation</h4>
+                        <p class="problem">A car travels at 60 km/hr for 3 hours. How far does it travel?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Distance = Speed × Time<br>
+                            Distance = 60 × 3 = 180 km<br><br>
+                            <strong>Answer:</strong> 180 km
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Finding Time</h4>
+                        <p class="problem">A train covers a distance of 240 km at a speed of 80 km/hr. How long does it take?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Time = Distance / Speed<br>
+                            Time = 240 / 80 = 3 hours<br><br>
+                            <strong>Answer:</strong> 3 hours
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Unit Conversion</h4>
+                        <p class="problem">A boy runs 100 meters in 10 seconds. Find his speed in km/hr.</p>
+                        <p class="solution">
+                            <strong>Step 1:</strong> Speed in m/s<br>
+                            100 / 10 = 10 m/s<br><br>
+                            <strong>Step 2:</strong> Convert to km/hr<br>
+                            10 × (18/5) = 36 km/hr<br><br>
+                            <strong>Answer:</strong> 36 km/hr
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Average Speed</h4>
+                        <p class="problem">A person travels from A to B at 40 km/hr and returns at 60 km/hr. If the distance is 120 km each way, find the average speed for the whole journey.</p>
+                        <p class="solution">
+                            <strong>Method 1: Using formula</strong><br>
+                            Avg Speed = 2 × 40 × 60 / (40 + 60) = 4800 / 100 = 48 km/hr<br><br>
+                            <strong>Method 2: Total distance/Total time</strong><br>
+                            Total Distance = 240 km<br>
+                            Time going = 120/40 = 3 hours<br>
+                            Time returning = 120/60 = 2 hours<br>
+                            Total Time = 5 hours<br>
+                            Avg Speed = 240 / 5 = 48 km/hr<br><br>
+                            <strong>Answer:</strong> 48 km/hr
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Relative Speed</h4>
+                        <p class="problem">Two cars start from the same point and move in opposite directions at 50 km/hr and 60 km/hr. How far apart will they be after 2 hours?</p>
+                        <p class="solution">
+                            <strong>Relative speed (opposite directions):</strong><br>
+                            50 + 60 = 110 km/hr<br><br>
+                            <strong>Distance after 2 hours:</strong><br>
+                            110 × 2 = 220 km<br><br>
+                            <strong>Answer:</strong> 220 km apart
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always ensure units are consistent before calculations</li>
+                        <li>Use the harmonic mean formula for average speed when distances are equal</li>
+                        <li>Draw a diagram for complex relative speed problems</li>
+                        <li>Convert km/hr to m/s by multiplying by 5/18 for easier mental calculations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Simple Interest -->
+            <div class="topic-content" id="simple-interest">
+                <h1 class="topic-title">Simple Interest</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Simple interest is a method of calculating interest where interest is charged only on the original principal amount. It is widely used in short-term loans, certificates of deposit, and certain savings accounts. The interest remains constant throughout the tenure.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Simple Interest (SI):</strong><br>
+                        SI = (P × R × T) / 100<br><br>
+                        <strong>Where:</strong><br>
+                        P = Principal (original amount)<br>
+                        R = Rate of interest per year (%)<br>
+                        T = Time in years<br><br>
+                        <strong>Amount (A):</strong><br>
+                        A = P + SI = P + (P × R × T)/100<br>
+                        A = P × (1 + (R × T)/100)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Finding Individual Components</h3>
+                    <div class="formula-box">
+                        <strong>Find Principal:</strong><br>
+                        P = (SI × 100) / (R × T)<br><br>
+                        <strong>Find Rate:</strong><br>
+                        R = (SI × 100) / (P × T)<br><br>
+                        <strong>Find Time:</strong><br>
+                        T = (SI × 100) / (P × R)<br><br>
+                        <strong>Find Amount:</strong><br>
+                        A = P + (P × R × T) / 100
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Time Conversions</h3>
+                    <ul class="key-points">
+                        <li><strong>Years to months:</strong> T(years) = T(months) / 12</li>
+                        <li><strong>Months to years:</strong> T(years) = T(months) / 12</li>
+                        <li><strong>Days to years:</strong> T(years) = T(days) / 365 (or 360 in some cases)</li>
+                        <li><strong>Quarterly rate:</strong> R/4 per quarter</li>
+                        <li><strong>Half-yearly rate:</strong> R/2 per half-year</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Simple Interest</h4>
+                        <p class="problem">Find the simple interest on Rs. 5000 at 6% per annum for 2 years.</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            SI = (P × R × T) / 100<br>
+                            SI = (5000 × 6 × 2) / 100 = 60000 / 100 = Rs. 600<br><br>
+                            <strong>Answer:</strong> Rs. 600
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Finding Amount</h4>
+                        <p class="problem">A sum of Rs. 2000 is invested at 5% per annum simple interest. What amount will be received after 3 years?</p>
+                        <p class="solution">
+                            <strong>Calculate SI:</strong><br>
+                            SI = (2000 × 5 × 3) / 100 = 30000 / 100 = Rs. 300<br><br>
+                            <strong>Calculate Amount:</strong><br>
+                            A = P + SI = 2000 + 300 = Rs. 2300<br><br>
+                            <strong>Answer:</strong> Rs. 2300
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Finding Principal</h4>
+                        <p class="problem">A sum of money amounts to Rs. 6500 at 8% per annum simple interest in 2 years. Find the principal.</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            A = P × (1 + (R × T)/100)<br>
+                            6500 = P × (1 + (8 × 2)/100) = P × (1 + 0.16) = P × 1.16<br><br>
+                            <strong>Solve for P:</strong><br>
+                            P = 6500 / 1.16 = Rs. 5603.45 (approximately)<br><br>
+                            <strong>Answer:</strong> Rs. 5603.45
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Finding Rate</h4>
+                        <p class="problem">At what rate per annum will Rs. 2000 become Rs. 2600 in 5 years at simple interest?</p>
+                        <p class="solution">
+                            <strong>Calculate SI:</strong><br>
+                            SI = A - P = 2600 - 2000 = Rs. 600<br><br>
+                            <strong>Using formula:</strong><br>
+                            R = (SI × 100) / (P × T) = (600 × 100) / (2000 × 5) = 60000 / 10000 = 6%<br><br>
+                            <strong>Answer:</strong> 6% per annum
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Finding Time</h4>
+                        <p class="problem">In how many years will Rs. 1500 become Rs. 2100 at 10% per annum simple interest?</p>
+                        <p class="solution">
+                            <strong>Calculate SI:</strong><br>
+                            SI = 2100 - 1500 = Rs. 600<br><br>
+                            <strong>Using formula:</strong><br>
+                            T = (SI × 100) / (P × R) = (600 × 100) / (1500 × 10) = 60000 / 15000 = 4 years<br><br>
+                            <strong>Answer:</strong> 4 years
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always ensure time is in years when using the basic SI formula</li>
+                        <li>Simple interest is linear - interest is the same every year</li>
+                        <li>For fractional years, convert to decimal (e.g., 6 months = 0.5 years)</li>
+                        <li>Memorize the formulas for finding each component (P, R, T, A)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Percentage -->
+            <div class="topic-content" id="percentage">
+                <h1 class="topic-title">Percentage</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Percentage means "per hundred" and is a way to express a number as a fraction of 100. It is used to compare quantities, calculate changes, and express proportions. The symbol % represents "per hundred" or division by 100.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Percentage:</strong><br>
+                        Percentage = (Part / Whole) × 100<br><br>
+                        <strong>Find X% of Y:</strong><br>
+                        (X/100) × Y<br><br>
+                        <strong>Find what % X is of Y:</strong><br>
+                        (X/Y) × 100<br><br>
+                        <strong>Fraction to Percentage:</strong><br>
+                        Multiply by 100
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Percentage Change</h3>
+                    <div class="formula-box">
+                        <strong>Percentage Increase:</strong><br>
+                        ((New - Original) / Original) × 100<br><br>
+                        <strong>Percentage Decrease:</strong><br>
+                        ((Original - New) / Original) × 100<br><br>
+                        <strong>Net Change:</strong><br>
+                        Final - Initial (can be positive or negative)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Successive Percentage Changes</h3>
+                    <div class="formula-box">
+                        <strong>For x% increase then y% increase:</strong><br>
+                        Net change = x + y + (x × y) / 100<br><br>
+                        <strong>General formula for successive changes:</strong><br>
+                        Effective % = A + B + (A × B) / 100 (for increases)<br>
+                        Effective % = A - B - (A × B) / 100 (for opposite changes)<br><br>
+                        <strong>Multiplier method:</strong><br>
+                        For x% change, multiply by (1 ± x/100)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Quick Conversion Tricks</h3>
+                    <ul class="key-points">
+                        <li><strong>10% = 1/10, 20% = 1/5, 25% = 1/4</strong></li>
+                        <li><strong>50% = 1/2, 75% = 3/4, 33.33% ≈ 1/3</strong></li>
+                        <li><strong>To find 5%, find 10% and divide by 2</strong></li>
+                        <li><strong>To find 15%, add 10% and 5%</strong></li>
+                        <li><strong>To find 20%, double 10%</strong></li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Percentage</h4>
+                        <p class="problem">What percentage is 25 of 80?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Percentage = (25 / 80) × 100 = 0.3125 × 100 = 31.25%<br><br>
+                            <strong>Answer:</strong> 31.25%
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Finding Part from Percentage</h4>
+                        <p class="problem">If 30% of a number is 150, what is the number?</p>
+                        <p class="solution">
+                            <strong>Let the number be x:</strong><br>
+                            30% of x = 150<br>
+                            (30/100) × x = 150<br>
+                            0.3x = 150<br>
+                            x = 150 / 0.3 = 500<br><br>
+                            <strong>Answer:</strong> 500
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Percentage Increase</h4>
+                        <p class="problem">The price of a shirt increased from Rs. 400 to Rs. 500. What is the percentage increase?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Increase = 500 - 400 = 100<br>
+                            Percentage Increase = (100 / 400) × 100 = 25%<br><br>
+                            <strong>Answer:</strong> 25%
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Successive Percentage</h4>
+                        <p class="problem">The population of a town increases by 10% each year. If the current population is 1,00,000, what will it be after 2 years?</p>
+                        <p class="solution">
+                            <strong>Method 1: Step by step</strong><br>
+                            After 1st year: 100000 × 1.10 = 110000<br>
+                            After 2nd year: 110000 × 1.10 = 121000<br><br>
+                            <strong>Method 2: Single calculation</strong><br>
+                            Effective increase = 10 + 10 + (10×10)/100 = 21%<br>
+                            Population = 100000 × 1.21 = 121000<br><br>
+                            <strong>Answer:</strong> 1,21,000
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Successive Decrease</h4>
+                        <p class="problem">A shop gives successive discounts of 20% and 10%. What is the single equivalent discount?</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Effective discount = 20 + 10 - (20×10)/100 = 30 - 2 = 28%<br><br>
+                            <strong>Method with multipliers:</strong><br>
+                            Original price = 100<br>
+                            After 20% discount: 100 × 0.80 = 80<br>
+                            After 10% discount: 80 × 0.90 = 72<br>
+                            Total discount = 100 - 72 = 28%<br><br>
+                            <strong>Answer:</strong> 28%
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Memorize common fraction-percentage conversions for faster calculations</li>
+                        <li>For successive changes, always apply changes sequentially to avoid errors</li>
+                        <li>When calculating percentage increase/decrease, always use original value as denominator</li>
+                        <li>Use multiplier method (1 ± r/100) for successive percentage calculations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Ratio and Proportion -->
+            <div class="topic-content" id="ratio">
+                <h1 class="topic-title">Ratio and Proportion</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Ratio is a comparison of two quantities by division, showing how many times one quantity contains or is contained within the other. Proportion is an equation that states two ratios are equal. These concepts are essential in solving various aptitude problems.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Definitions</h3>
+                    <div class="formula-box">
+                        <strong>Ratio:</strong><br>
+                        a:b = a/b (read as "a is to b")<br><br>
+                        <strong>Proportion:</strong><br>
+                        a:b = c:d (read as "a is to b as c is to d")<br><br>
+                        <strong>Product of means = Product of extremes:</strong><br>
+                        If a:b = c:d, then b × c = a × d<br><br>
+                        <strong>Continued proportion:</strong><br>
+                        a:b = b:c, so b² = a × c
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Types of Proportions</h3>
+                    <div class="formula-box">
+                        <strong>Mean Proportional:</strong><br>
+                        Between a and b: √(a × b)<br><br>
+                        <strong>Third Proportional:</strong><br>
+                        If a:b = b:c, then c = b²/a<br><br>
+                        <strong>Fourth Proportional:</strong><br>
+                        If a:b = c:d, then d = (b × c)/a<br><br>
+                        <strong>Compound Ratio:</strong><br>
+                        (a:b) × (c:d) = (a×c):(b×d)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Componendo and Dividendo</h3>
+                    <div class="formula-box">
+                        <strong>If a/b = c/d, then:</strong><br><br>
+                        <strong>Componendo:</strong><br>
+                        (a + b)/b = (c + d)/d<br><br>
+                        <strong>Dividendo:</strong><br>
+                        (a - b)/b = (c - d)/d<br><br>
+                        <strong>Componendo-Dividendo:</strong><br>
+                        (a + b)/(a - b) = (c + d)/(c - d)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Division in Given Ratio</h3>
+                    <ul class="key-points">
+                        <li><strong>To divide X in ratio a:b:</strong><br>
+                            Part 1 = (a/(a+b)) × X, Part 2 = (b/(a+b)) × X</li>
+                        <li><strong>For ratio a:b:c:</strong><br>
+                            Parts = (a/(a+b+c)) × X, etc.</li>
+                        <li><strong>Ratios can be simplified</strong> by dividing by GCD</li>
+                        <li><strong>Direct proportion:</strong> As one increases, other increases</li>
+                        <li><strong>Inverse proportion:</strong> As one increases, other decreases</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Ratio</h4>
+                        <p class="problem">Divide Rs. 500 in the ratio 3:2.</p>
+                        <p class="solution">
+                            <strong>Total parts:</strong> 3 + 2 = 5 parts<br><br>
+                            <strong>Value of one part:</strong> 500 / 5 = Rs. 100<br><br>
+                            <strong>First share:</strong> 3 × 100 = Rs. 300<br>
+                            <strong>Second share:</strong> 2 × 100 = Rs. 200<br><br>
+                            <strong>Answer:</strong> Rs. 300 and Rs. 200
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Finding Fourth Proportional</h4>
+                        <p class="problem">Find the fourth proportional to 3, 5, and 15.</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            If a:b = c:d, then d = (b × c)/a<br>
+                            d = (5 × 15) / 3 = 75 / 3 = 25<br><br>
+                            <strong>Answer:</strong> 25
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Mean Proportional</h4>
+                        <p class="problem">Find the mean proportional between 4 and 16.</p>
+                        <p class="solution">
+                            <strong>Using formula:</strong><br>
+                            Mean proportional = √(4 × 16) = √64 = 8<br><br>
+                            <strong>Answer:</strong> 8
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Componendo-Dividendo</h4>
+                        <p class="problem">If (x + y)/(x - y) = 5/3, find x/y.</p>
+                        <p class="solution">
+                            <strong>Using Componendo-Dividendo:</strong><br>
+                            If (x + y)/(x - y) = 5/3<br><br>
+                            <strong>Then x/y = (5 + 3)/(5 - 3) = 8/2 = 4</strong><br><br>
+                            <strong>Answer:</strong> x/y = 4
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Age Ratio Problem</h4>
+                        <p class="problem">The ratio of ages of A and B is 4:5. After 3 years, the ratio becomes 5:6. Find their present ages.</p>
+                        <p class="solution">
+                            <strong>Let present ages be 4x and 5x:</strong><br><br>
+                            <strong>After 3 years:</strong><br>
+                            (4x + 3) / (5x + 3) = 5/6<br><br>
+                            <strong>Cross multiply:</strong><br>
+                            6(4x + 3) = 5(5x + 3)<br>
+                            24x + 18 = 25x + 15<br>
+                            18 - 15 = 25x - 24x<br>
+                            3 = x<br><br>
+                            <strong>Present ages:</strong><br>
+                            A = 4 × 3 = 12 years<br>
+                            B = 5 × 3 = 15 years<br><br>
+                            <strong>Answer:</strong> A is 12, B is 15
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>Always simplify ratios by dividing by GCD</li>
+                        <li>When dividing a quantity, find total parts first, then divide</li>
+                        <li>For proportion problems, use cross-multiplication to avoid confusion</li>
+                        <li>Componendo-Dividendo is useful when sums and differences are involved</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Probability -->
+            <div class="topic-content" id="probability">
+                <h1 class="topic-title">Probability</h1>
+
+                <div class="content-section">
+                    <h3>Introduction</h3>
+                    <p>Probability measures the likelihood that an event will occur. It is expressed as a number between 0 and 1, where 0 indicates impossibility and 1 indicates certainty. Probability is fundamental in statistics, gambling, weather forecasting, and many scientific fields.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Basic Formulas</h3>
+                    <div class="formula-box">
+                        <strong>Probability of an event E:</strong><br>
+                        P(E) = Number of favorable outcomes / Total number of possible outcomes<br><br>
+                        <strong>Probability range:</strong> 0 ≤ P(E) ≤ 1<br><br>
+                        <strong>Sum of probabilities:</strong> P(E) + P(E') = 1 (where E' is complement)<br><br>
+                        <strong>Odds in favor:</strong> P(E) : P(E')<br><br>
+                        <strong>Odds against:</strong> P(E') : P(E)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Types of Events</h3>
+                    <div class="formula-box">
+                        <strong>Independent Events:</strong><br>
+                        P(A and B) = P(A) × P(B)<br><br>
+                        <strong>Mutually Exclusive Events:</strong><br>
+                        P(A or B) = P(A) + P(B)<br><br>
+                        <strong>Non-Mutually Exclusive:</strong><br>
+                        P(A or B) = P(A) + P(B) - P(A and B)<br><br>
+                        <strong>Conditional Probability:</strong><br>
+                        P(A|B) = P(A and B) / P(B)
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Important Concepts</h3>
+                    <ul class="key-points">
+                        <li><strong>Certain Event:</strong> P(E) = 1</li>
+                        <li><strong>Impossible Event:</strong> P(E) = 0</li>
+                        <li><strong>Complementary Event:</strong> P(not E) = 1 - P(E)</li>
+                        <li><strong>Equally Likely Outcomes:</strong> Each outcome has same probability</li>
+                        <li><strong>Addition Rule:</strong> For OR events</li>
+                        <li><strong>Multiplication Rule:</strong> For AND events</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Card, Dice, and Coin Basics</h3>
+                    <ul class="key-points">
+                        <li><strong>Standard deck:</strong> 52 cards, 4 suits, 13 ranks each</li>
+                        <li><strong>Die:</strong> 6 faces (1-6)</li>
+                        <li><strong>Coin:</strong> 2 outcomes (H, T)</li>
+                        <li><strong>Red card probability:</strong> 26/52 = 1/2</li>
+                        <li><strong>Prime number on die:</strong> 3/6 = 1/2 (2, 3, 5)</li>
+                        <li><strong>Even number on die:</strong> 3/6 = 1/2 (2, 4, 6)</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Solved Examples</h3>
+                    
+                    <div class="example-box">
+                        <h4>Example 1: Basic Probability</h4>
+                        <p class="problem">What is the probability of getting a head when tossing a fair coin?</p>
+                        <p class="solution">
+                            <strong>Total outcomes:</strong> 2 (H, T)<br>
+                            <strong>Favorable outcomes:</strong> 1 (H)<br>
+                            <strong>Probability:</strong> P(H) = 1/2 = 0.5<br><br>
+                            <strong>Answer:</strong> 1/2 or 0.5
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 2: Rolling a Die</h4>
+                        <p class="problem">Find the probability of getting an even number when rolling a fair die.</p>
+                        <p class="solution">
+                            <strong>Total outcomes:</strong> 6<br>
+                            <strong>Even numbers:</strong> 2, 4, 6 = 3 outcomes<br>
+                            <strong>Probability:</strong> P(even) = 3/6 = 1/2<br><br>
+                            <strong>Answer:</strong> 1/2
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 3: Drawing a Card</h4>
+                        <p class="problem">A card is drawn from a standard deck. Find the probability of drawing a king.</p>
+                        <p class="solution">
+                            <strong>Total cards:</strong> 52<br>
+                            <strong>Number of kings:</strong> 4<br>
+                            <strong>Probability:</strong> P(King) = 4/52 = 1/13<br><br>
+                            <strong>Answer:</strong> 1/13
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 4: Independent Events</h4>
+                        <p class="problem">A coin is tossed twice. Find the probability of getting two heads.</p>
+                        <p class="solution">
+                            <strong>Method 1: Sample space</strong><br>
+                            HH, HT, TH, TT (4 outcomes)<br>
+                            Favorable: HH (1 outcome)<br>
+                            P = 1/4<br><br>
+                            <strong>Method 2: Multiplication rule</strong><br>
+                            P(HH) = P(H) × P(H) = (1/2) × (1/2) = 1/4<br><br>
+                            <strong>Answer:</strong> 1/4
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 5: Mutually Exclusive Events</h4>
+                        <p class="problem">A die is rolled. Find the probability of getting a number 3 or 5.</p>
+                        <p class="solution">
+                            <strong>Total outcomes:</strong> 6<br>
+                            <strong>Favorable for 3:</strong> 1 outcome<br>
+                            <strong>Favorable for 5:</strong> 1 outcome<br><br>
+                            <strong>Since mutually exclusive:</strong><br>
+                            P(3 or 5) = P(3) + P(5) = 1/6 + 1/6 = 2/6 = 1/3<br><br>
+                            <strong>Answer:</strong> 1/3
+                        </p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example 6: Complement Rule</h4>
+                        <p class="problem">In a class of 50 students, 30 are boys. If a student is selected at random, what is the probability that the student is a girl?</p>
+                        <p class="solution">
+                            <strong>Number of girls:</strong> 50 - 30 = 20<br>
+                            <strong>Probability:</strong> P(girl) = 20/50 = 2/5 = 0.4<br><br>
+                            <strong>Using complement:</strong><br>
+                            P(girl) = 1 - P(boy) = 1 - 30/50 = 1 - 0.6 = 0.4<br><br>
+                            <strong>Answer:</strong> 2/5 or 0.4
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Practice Tips</h3>
+                    <ul class="key-points">
+                        <li>List all possible outcomes to avoid missing any in the sample space</li>
+                        <li>Use multiplication for AND (independent events), addition for OR</li>
+                        <li>Use complement rule when finding "at least one" or "not" probability</li>
+                        <li>Remember that favorable outcomes must be counted carefully for cards and dice</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Topic selection functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const topicItems = document.querySelectorAll('.topic-item');
+            const topicContents = document.querySelectorAll('.topic-content');
+
+            topicItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const topic = this.getAttribute('data-topic');
+
+                    // Remove active class from all topics and contents
+                    topicItems.forEach(t => t.classList.remove('active'));
+                    topicContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked topic and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(topic).classList.add('active');
+
+                    // Scroll to top of content
+                    document.querySelector('.notes-main').scrollTop = 0;
+                });
+            });
+
+            // Store last selected topic in localStorage
+            const savedTopic = localStorage.getItem('lastSelectedTopic');
+            if (savedTopic) {
+                const topicToActivate = document.querySelector(`[data-topic="${savedTopic}"]`);
+                if (topicToActivate) {
+                    topicToActivate.click();
+                }
+            }
+
+            // Save topic selection when changed
+            topicItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    localStorage.setItem('lastSelectedTopic', this.getAttribute('data-topic'));
+                });
+            });
+        });
+    </script>
 </body>
 </html>
