@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer - Aptitude Practice</title>
+    <link rel="stylesheet" href="global.css">
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--accent-yellow);
+            margin-bottom: 30px;
+        }
+        
+        .mode-indicator {
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .study-mode {
+            background-color: rgba(255, 215, 0, 0.2);
+            color: var(--accent-yellow);
+            border: 2px solid var(--accent-yellow);
+        }
+        
+        .break-mode {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+        
+        .timer-display {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--bg-dark);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .timer {
+            font-size: 72px;
+            font-weight: bold;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timer-status {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .timer-status.active {
+            display: block;
+            background-color: rgba(255, 215, 0, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-yellow-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .settings {
+            margin-bottom: 25px;
+        }
+        
+        .settings label {
+            display: inline-block;
+            margin: 0 15px 15px 0;
+            color: var(--text-secondary);
+        }
+        
+        select {
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+        }
+        
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .session-info {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--bg-dark);
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .session-info span {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">Aptitude Practice</a>
+        <div class="navbar-user">
+            <span><a href="main.html" class="link">Back to Menu</a></span>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>Focus Timer</h1>
+        
+        <div id="mode" class="mode-indicator study-mode">Study Time</div>
+        
+        <div id="status" class="timer-status">Timer running - switch pages freely</div>
+        
+        <div class="timer-display">
+            <div class="timer" id="timer">30:00</div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Start</button>
+            <button class="btn btn-danger" id="stopBtn" onclick="stopTimer()" disabled>Stop</button>
+        </div>
+        
+        <div class="settings">
+            <label>
+                Study: 
+                <select id="studyTime" onchange="onSettingsChanged()">
+                    <option value="20">20 min</option>
+                    <option value="30" selected>30 min</option>
+                    <option value="40">40 min</option>
+                    <option value="50">50 min</option>
+                    <option value="60">1 hour</option>
+                </select>
+            </label>
+            
+            <label>
+                Break: 
+                <select id="breakTime" onchange="onSettingsChanged()">
+                    <option value="5">5 min</option>
+                    <option value="10" selected>10 min</option>
+                    <option value="20">20 min</option>
+                    <option value="30">30 min</option>
+                </select>
+            </label>
+        </div>
+        
+        <div class="session-info">
+            Study sessions: <span id="studyCount">0</span> | 
+            Break sessions: <span id="breakCount">0</span>
+        </div>
+    </div>
+
+    <script>
+        let isStudy = true;
+        let studyCount = 0;
+        let breakCount = 0;
+        let targetTime = null;
+        let totalSeconds = 1800;
+        let isRunning = false;
+        
+        // Initialize on load
+        window.onload = function() {
+            loadState();
+            updateDisplay();
+            setInterval(checkTimer, 1000);
+        };
+        
+        function loadState() {
+            const saved = localStorage.getItem('pomodoroState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                
+                isStudy = state.isStudy !== false;
+                studyCount = state.studyCount || 0;
+                breakCount = state.breakCount || 0;
+                totalSeconds = state.totalSeconds || 1800;
+                targetTime = state.targetTime;
+                
+                // Restore dropdown values
+                document.getElementById('studyTime').value = state.studyDuration || 30;
+                document.getElementById('breakTime').value = state.breakDuration || 10;
+                
+                // Check if timer was running
+                if (targetTime) {
+                    const remaining = Math.ceil((targetTime - Date.now()) / 1000);
+                    if (remaining > 0) {
+                        isRunning = true;
+                        updateUIForRunning();
+                    } else {
+                        // Timer completed while away
+                        handleTimerComplete(state);
+                    }
+                }
+                
+                updateSessionDisplay();
+                updateModeIndicator();
+            }
+        }
+        
+        function saveState() {
+            const state = {
+                isStudy: isStudy,
+                targetTime: targetTime,
+                totalSeconds: totalSeconds,
+                studyCount: studyCount,
+                breakCount: breakCount,
+                studyDuration: parseInt(document.getElementById('studyTime').value),
+                breakDuration: parseInt(document.getElementById('breakTime').value)
+            };
+            localStorage.setItem('pomodoroState', JSON.stringify(state));
+        }
+        
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+        
+        function startTimer() {
+            const duration = isStudy ? 
+                parseInt(document.getElementById('studyTime').value) : 
+                parseInt(document.getElementById('breakTime').value);
+            
+            totalSeconds = duration * 60;
+            targetTime = Date.now() + (totalSeconds * 1000);
+            isRunning = true;
+            
+            saveState();
+            updateUIForRunning();
+        }
+        
+        function pauseTimer() {
+            // Calculate remaining time and save
+            const remaining = Math.ceil((targetTime - Date.now()) / 1000);
+            if (remaining > 0) {
+                totalSeconds = remaining;
+            }
+            targetTime = null;
+            isRunning = false;
+            
+            saveState();
+            updateUIForStopped();
+            updateDisplay();
+        }
+        
+        function stopTimer() {
+            targetTime = null;
+            isRunning = false;
+            isStudy = true;
+            
+            // Reset to selected study time
+            const studyDuration = parseInt(document.getElementById('studyTime').value);
+            totalSeconds = studyDuration * 60;
+            
+            saveState();
+            updateUIForStopped();
+            updateModeIndicator();
+            updateDisplay();
+        }
+        
+        function updateUIForRunning() {
+            document.getElementById('status').classList.add('active');
+            document.getElementById('startBtn').textContent = 'Pause';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('studyTime').disabled = true;
+            document.getElementById('breakTime').disabled = true;
+        }
+        
+        function updateUIForStopped() {
+            document.getElementById('status').classList.remove('active');
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('studyTime').disabled = false;
+            document.getElementById('breakTime').disabled = false;
+        }
+        
+        function updateDisplay() {
+            let seconds;
+            
+            if (isRunning && targetTime) {
+                seconds = Math.ceil((targetTime - Date.now()) / 1000);
+                if (seconds < 0) seconds = 0;
+            } else {
+                seconds = totalSeconds;
+            }
+            
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('timer').textContent = 
+                minutes.toString().padStart(2, '0') + ':' + 
+                secs.toString().padStart(2, '0');
+        }
+        
+        function updateModeIndicator() {
+            const modeEl = document.getElementById('mode');
+            if (isStudy) {
+                modeEl.textContent = 'Study Time';
+                modeEl.className = 'mode-indicator study-mode';
+            } else {
+                modeEl.textContent = 'Break Time';
+                modeEl.className = 'mode-indicator break-mode';
+            }
+        }
+        
+        function updateSessionDisplay() {
+            document.getElementById('studyCount').textContent = studyCount;
+            document.getElementById('breakCount').textContent = breakCount;
+        }
+        
+        function onSettingsChanged() {
+            if (!isRunning) {
+                const studyDuration = parseInt(document.getElementById('studyTime').value);
+                totalSeconds = studyDuration * 60;
+                saveState();
+                updateDisplay();
+            }
+        }
+        
+        function checkTimer() {
+            updateDisplay();
+            
+            if (isRunning && targetTime && Date.now() >= targetTime) {
+                handleTimerComplete();
+            }
+        }
+        
+        function handleTimerComplete() {
+            isRunning = false;
+            targetTime = null;
+            
+            if (isStudy) {
+                studyCount++;
+                isStudy = false;
+                totalSeconds = parseInt(document.getElementById('breakTime').value) * 60;
+            } else {
+                breakCount++;
+                isStudy = true;
+                totalSeconds = parseInt(document.getElementById('studyTime').value) * 60;
+            }
+            
+            updateUIForStopped();
+            updateModeIndicator();
+            updateSessionDisplay();
+            saveState();
+            
+            // Play sound
+            playBeep();
+            
+            // Show notification
+            setTimeout(function() {
+                alert(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
+            }, 100);
+        }
+        
+        function playBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
