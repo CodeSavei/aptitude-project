@@ -110,7 +110,13 @@ const data = await response.json();
 if (data.success) {
 localStorage.setItem('userId', data.userId);
 localStorage.setItem('username', data.username);
+localStorage.setItem('role', data.role);
+
+if (data.role === 'admin') {
+window.location.href = 'login_admin.html';
+} else {
 window.location.href = 'main.html';
+}
 } else {
 showMessage('loginMessage', data.message, true);
 }

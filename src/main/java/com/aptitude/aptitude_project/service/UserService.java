@@ -13,11 +13,18 @@ public class UserService {
     private UserRepository userRepository;
     
     public User registerUser(User user) {
+        if (user.getRole() == null) {
+            user.setRole("customer");
+        }
         return userRepository.save(user);
     }
     
     public Optional<User> loginUser(String username, String password) {
         return userRepository.findByUsername(username)
                 .filter(u -> u.getPassword().equals(password));
+    }
+    
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

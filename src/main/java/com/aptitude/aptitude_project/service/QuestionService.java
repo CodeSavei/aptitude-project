@@ -43,4 +43,16 @@ public class QuestionService {
         Collections.shuffle(questions, new Random());
         return questions.subList(0, count);
     }
+    
+    public Question saveQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+    
+    public boolean deleteQuestion(Long id) {
+        if (questionRepository.existsById(id)) {
+            questionRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }
