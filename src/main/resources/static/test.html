@@ -127,7 +127,6 @@
                 selectedOption: selectedOption.value
             });
             
-            // Calculate score
             let score = 0;
             userAnswers.forEach(answer => {
                 const q = questions.find(q => q.id === answer.questionId);
@@ -136,9 +135,8 @@
                 }
             });
             
-            // Save topic progress if in topic mode
             if (testMode === 'topic' && currentTopic) {
-                saveTopicProgress(currentTopic, score, questions.length);
+                await saveTopicProgress(currentTopic, score, questions.length);
             }
             
             try {
@@ -159,39 +157,52 @@
                 
                 const result = await response.json();
                 
-                localStorage.setItem('testScore', result.score);
-                localStorage.setItem('testTotal', result.total);
+                localStorage.setItem('testScore', score);
+                localStorage.setItem('testTotal', questions.length);
                 window.location.href = 'result.html';
                 
             } catch (error) {
-                // If API fails, still show results
+                console.log('API error, still saving locally');
                 localStorage.setItem('testScore', score);
                 localStorage.setItem('testTotal', questions.length);
                 window.location.href = 'result.html';
             }
         }
         
-        function saveTopicProgress(topic, score, total) {
+        async function saveTopicProgress(topic, score, total) {
             const passed = score >= Math.ceil(total * 0.6);
-            let progress = localStorage.getItem('topicProgress_' + userId);
-            progress = progress ? JSON.parse(progress) : {};
+            const percentage = (score / total) * 100;
             
-            if (!progress[topic]) {
-                progress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            let currentProgress = null;
+            try {
+                const response = await fetch('/api/progress/user/' + userId + '/topic/' + encodeURIComponent(topic));
+                if (response.ok) {
+                    currentProgress = await response.json();
+                }
+            } catch (error) {
+                console.log('Failed to load current progress');
             }
             
-            progress[topic].attempts++;
-            progress[topic].totalQuestions = total;
+            const newAttempts = currentProgress ? currentProgress.attempts + 1 : 1;
+            const newBestScore = currentProgress ? Math.max(currentProgress.score, percentage) : percentage;
+            const newCompleted = passed || (currentProgress ? currentProgress.completed : false);
             
-            if (score > progress[topic].bestScore) {
-                progress[topic].bestScore = score;
+            try {
+                await fetch('/api/progress/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: parseInt(userId),
+                        topic: topic,
+                        attempts: newAttempts,
+                        score: newBestScore,
+                        completed: newCompleted
+                    })
+                });
+                console.log('Progress saved successfully');
+            } catch (error) {
+                console.log('Failed to save progress to database:', error);
             }
-            
-            if (passed) {
-                progress[topic].completed = true;
-            }
-            
-            localStorage.setItem('topicProgress_' + userId, JSON.stringify(progress));
         }
 
         if (!userId) {

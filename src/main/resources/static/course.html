@@ -60,25 +60,29 @@
             'Probability'
         ];
         
+        // Map display names to API topic names
+        var topicNameMap = {
+            'Problem on trains': 'Problem on trains',
+            'Time and Work': 'time and work',
+            'Profit and Loss': 'profit and loss',
+            'Problems on Ages': 'problems on ages',
+            'Average': 'average',
+            'Permutation and Combination': 'permutation and combination',
+            'Time and Distance': 'time and distance',
+            'Simple Interest': 'simple interest',
+            'Percentage': 'percentage',
+            'Ratio and Proportion': 'ratio and proportion',
+            'Probability': 'probability'
+        };
+        
         if (!userId) {
             window.location.href = 'login.html';
         }
         
-        function getTopicProgress() {
-            var progress = localStorage.getItem('topicProgress_' + userId);
-            if (progress) {
-                return JSON.parse(progress);
-            }
-            var initialProgress = {};
-            topics.forEach(function(topic) {
-                initialProgress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
-            });
-            localStorage.setItem('topicProgress_' + userId, JSON.stringify(initialProgress));
-            return initialProgress;
-        }
+        var progressData = {};
         
-        function saveTopicProgress(progress) {
-            localStorage.setItem('topicProgress_' + userId, JSON.stringify(progress));
+        function getProgress() {
+            return progressData;
         }
         
         function init() {
@@ -89,14 +93,48 @@
                 option.textContent = topic;
                 select.appendChild(option);
             });
+            
+            loadProgressFromDB();
+        }
+        
+        function loadProgressFromDB() {
+            fetch('/api/progress/user/' + userId)
+                .then(response => response.json())
+                .then(data => {
+                    // Convert array to object
+                    if (Array.isArray(data)) {
+                        data.forEach(function(item) {
+                            progressData[item.topic] = {
+                                completed: item.completed,
+                                attempts: item.attempts,
+                                bestScore: item.score,
+                                totalQuestions: 0
+                            };
+                        });
+                    }
+                    updateOverallProgress();
+                })
+                .catch(error => {
+                    console.log('Failed to load progress from database, starting fresh');
+                    initializeProgress();
+                });
+        }
+        
+        function initializeProgress() {
+            var initialProgress = {};
+            topics.forEach(function(topic) {
+                var apiName = topicNameMap[topic];
+                initialProgress[apiName] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            });
+            progressData = initialProgress;
             updateOverallProgress();
         }
         
         function updateOverallProgress() {
-            var progress = getTopicProgress();
             var completed = 0;
             topics.forEach(function(topic) {
-                if (progress[topic] && progress[topic].completed) {
+                var apiName = topicNameMap[topic];
+                if (progressData[apiName] && progressData[apiName].completed) {
                     completed++;
                 }
             });
@@ -119,13 +157,13 @@
                 return;
             }
             
-            var progress = getTopicProgress();
-            var topicData = progress[topic] || { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+            var apiName = topicNameMap[topic];
+            var topicData = progressData[apiName] || { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
             
             var statusText = topicData.completed ? 'Completed' : (topicData.attempts > 0 ? 'In Progress' : 'Not Started');
             document.getElementById('topicStatus').textContent = statusText;
             document.getElementById('topicAttempts').textContent = topicData.attempts;
-            document.getElementById('topicBestScore').textContent = topicData.totalQuestions > 0 ? topicData.bestScore + '/' + topicData.totalQuestions : '-';
+            document.getElementById('topicBestScore').textContent = topicData.totalQuestions > 0 ? topicData.bestScore + '%' : '-';
             
             infoDiv.style.display = 'block';
         }
@@ -139,7 +177,9 @@
                 return;
             }
             
-            fetch('/api/questions/topic/' + encodeURIComponent(topic) + '/random?count=5')
+            var apiName = topicNameMap[topic];
+            
+            fetch('/api/questions/topic/' + encodeURIComponent(apiName) + '/random?count=5')
                 .then(response => response.json())
                 .then(questions => {
                     if (questions.length === 0) {
@@ -158,12 +198,30 @@
         
         function resetCourse() {
             if (confirm('Are you sure you want to reset your course progress?')) {
-                var initialProgress = {};
+                var resetPromises = [];
+                
                 topics.forEach(function(topic) {
-                    initialProgress[topic] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+                    var apiName = topicNameMap[topic];
+                    progressData[apiName] = { completed: false, attempts: 0, bestScore: 0, totalQuestions: 0 };
+                    
+                    resetPromises.push(
+                        fetch('/api/progress/save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: parseInt(userId),
+                                topic: apiName,
+                                attempts: 0,
+                                score: 0,
+                                completed: false
+                            })
+                        })
+                    );
                 });
-                localStorage.setItem('topicProgress_' + userId, JSON.stringify(initialProgress));
-                window.location.reload();
+                
+                Promise.all(resetPromises).then(function() {
+                    window.location.reload();
+                });
             }
         }
         

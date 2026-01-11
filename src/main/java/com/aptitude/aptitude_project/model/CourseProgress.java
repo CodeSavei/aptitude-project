@@ -10,29 +10,47 @@ public class CourseProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
     
-    @Column(name = "current_test_number")
-    private Integer currentTestNumber = 1;
+    @Column(name = "topic", nullable = false)
+    private String topic;
     
-    // Constructors
+    @Column(name = "attempts")
+    private int attempts;
+    
+    @Column(name = "score")
+    private double score;
+    
+    @Column(name = "completed")
+    private boolean completed;
+    
     public CourseProgress() {}
     
-    public CourseProgress(Long userId) {
+    public CourseProgress(Long userId, String topic, int attempts, double score, boolean completed) {
         this.userId = userId;
-        this.currentTestNumber = 1;
+        this.topic = topic;
+        this.attempts = attempts;
+        this.score = score;
+        this.completed = completed;
     }
     
-    // Getters and Setters
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
     
-    public Integer getCurrentTestNumber() { return currentTestNumber; }
-    public void setCurrentTestNumber(Integer currentTestNumber) { 
-        this.currentTestNumber = currentTestNumber; 
-    }
+    public String getTopic() { return topic; }
+    public void setTopic(String topic) { this.topic = topic; }
+    
+    public int getAttempts() { return attempts; }
+    public void setAttempts(int attempts) { this.attempts = attempts; }
+    
+    public double getScore() { return score; }
+    public void setScore(double score) { this.score = score; }
+    
+    public boolean isCompleted() { return completed; }
+    public void setCompleted(boolean completed) { this.completed = completed; }
 }

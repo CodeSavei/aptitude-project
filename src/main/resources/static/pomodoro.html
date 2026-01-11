@@ -145,19 +145,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
-        .session-info {
-            text-align: center;
-            padding: 15px;
-            background-color: var(--bg-dark);
-            border-radius: 8px;
-            color: var(--text-secondary);
-        }
-        
-        .session-info span {
-            color: var(--accent-yellow);
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -206,17 +193,10 @@
                 </select>
             </label>
         </div>
-        
-        <div class="session-info">
-            Study sessions: <span id="studyCount">0</span> | 
-            Break sessions: <span id="breakCount">0</span>
-        </div>
     </div>
 
     <script>
         let isStudy = true;
-        let studyCount = 0;
-        let breakCount = 0;
         let targetTime = null;
         let totalSeconds = 1800;
         let isRunning = false;
@@ -224,7 +204,6 @@
         let pendingNotification = false;
         
         window.onload = function() {
-            // Request notification permission early
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
             }
@@ -232,7 +211,6 @@
             updateDisplay();
             setInterval(checkTimer, 1000);
             
-            // Listen for page visibility changes
             document.addEventListener('visibilitychange', handleVisibilityChange);
         };
         
@@ -242,14 +220,11 @@
                 const state = JSON.parse(saved);
                 
                 isStudy = state.isStudy !== false;
-                studyCount = state.studyCount || 0;
-                breakCount = state.breakCount || 0;
                 totalSeconds = state.totalSeconds || 1800;
                 targetTime = state.targetTime;
                 isPaused = state.isPaused === true;
                 pendingNotification = state.pendingNotification === true;
                 
-                // Restore dropdown values
                 document.getElementById('studyTime').value = state.studyDuration || 30;
                 document.getElementById('breakTime').value = state.breakDuration || 10;
                 
@@ -269,7 +244,6 @@
                     updateUIForPaused();
                 }
                 
-                // Check if we need to show notification (user returned after timer completed)
                 if (pendingNotification) {
                     setTimeout(() => {
                         playBeep();
@@ -279,7 +253,6 @@
                     }, 300);
                 }
                 
-                updateSessionDisplay();
                 updateModeIndicator();
             }
         }
@@ -289,8 +262,6 @@
                 isStudy: isStudy,
                 targetTime: targetTime,
                 totalSeconds: totalSeconds,
-                studyCount: studyCount,
-                breakCount: breakCount,
                 studyDuration: parseInt(document.getElementById('studyTime').value),
                 breakDuration: parseInt(document.getElementById('breakTime').value),
                 isPaused: isPaused,
@@ -309,7 +280,7 @@
         
         function startTimer() {
             if (isPaused) {
-                // Resume from pause - use the saved remaining time
+                // Resume from pause
                 isPaused = false;
                 isRunning = true;
                 targetTime = Date.now() + (totalSeconds * 1000);
@@ -415,11 +386,6 @@
             }
         }
         
-        function updateSessionDisplay() {
-            document.getElementById('studyCount').textContent = studyCount;
-            document.getElementById('breakCount').textContent = breakCount;
-        }
-        
         function onSettingsChanged() {
             if (!isRunning && !isPaused) {
                 const studyDuration = parseInt(document.getElementById('studyTime').value);
@@ -443,33 +409,25 @@
             isPaused = false;
             
             if (isStudy) {
-                studyCount++;
                 isStudy = false;
                 totalSeconds = parseInt(document.getElementById('breakTime').value) * 60;
             } else {
-                breakCount++;
                 isStudy = true;
                 totalSeconds = parseInt(document.getElementById('studyTime').value) * 60;
             }
             
             updateUIForStopped();
             updateModeIndicator();
-            updateSessionDisplay();
             
-            // Save state before showing notification
             pendingNotification = true;
             saveState();
-            
-            // Try to show notification/beep
+
             if (!document.hidden) {
-                // Page is visible - show notification now
                 playBeep();
                 showNotification(isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.');
                 pendingNotification = false;
                 saveState();
             } else {
-                // Page is hidden - notification will show when user returns
-                // Try browser notification anyway (might work depending on browser)
                 if (Notification.permission === 'granted') {
                     new Notification('Pomodoro Timer', { 
                         body: isStudy ? 'Break over! Time to study.' : 'Study session complete! Time for a break.',
@@ -480,7 +438,6 @@
         }
         
         function handleVisibilityChange() {
-            // When page becomes visible, check if there's a pending notification
             if (!document.hidden && pendingNotification) {
                 setTimeout(() => {
                     playBeep();
@@ -492,7 +449,6 @@
         }
         
         function showNotification(message) {
-            // Try to use browser notifications first (works in background)
             if (Notification.permission === 'granted') {
                 new Notification('Pomodoro Timer', { body: message, icon: 'favicon.ico' });
             } else if (Notification.permission !== 'denied') {
@@ -508,7 +464,7 @@
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Resume audio context if suspended (required for background tabs)
+                // Resume audio context if it is offf
                 if (audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
